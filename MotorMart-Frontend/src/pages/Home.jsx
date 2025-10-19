@@ -41,13 +41,13 @@ export default function Home() {
       <FilterBar query={query} onChange={setQuery} />
       <section>
         <div className="text-lg font-semibold text-slate-800 mb-4">Ending Soon</div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-4 gap-4">
           {endingSoon.map(v => <AuctionCard key={v.id} vehicle={v} />)}
         </div>
       </section>
       <section>
         <div className="text-lg font-semibold text-slate-800 mb-4">All Auctions</div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-4 gap-4">
           {filtered.map(v => <AuctionCard key={v.id} vehicle={v} />)}
         </div>
       </section>

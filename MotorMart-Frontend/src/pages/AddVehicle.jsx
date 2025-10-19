@@ -37,8 +37,8 @@ export default function AddVehicle() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="max-w-3xl mx-auto card p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div className="md:col-span-2 text-xl font-semibold">Add Vehicle</div>
+    <form onSubmit={onSubmit} className="max-w-3xl mx-auto card p-6 grid grid-cols-2 gap-4">
+      <div className="col-span-2 text-xl font-semibold">Add Vehicle</div>
       <input className="input" placeholder="Title" value={form.title} onChange={e=>update('title', e.target.value)} />
       <input className="input" placeholder="Make" value={form.make} onChange={e=>update('make', e.target.value)} />
       <input className="input" placeholder="Model" value={form.model} onChange={e=>update('model', e.target.value)} />
@@ -56,8 +56,8 @@ export default function AddVehicle() {
       </select>
       <input className="input" placeholder="Starting Price" value={form.startingPrice} onChange={e=>update('startingPrice', e.target.value)} />
       <input className="input" type="datetime-local" value={form.auctionEndTime} onChange={e=>update('auctionEndTime', e.target.value)} />
-      <textarea className="input md:col-span-2" placeholder="Description" value={form.description} onChange={e=>update('description', e.target.value)} />
-      <div className="md:col-span-2 space-y-2">
+      <textarea className="input col-span-2" placeholder="Description" value={form.description} onChange={e=>update('description', e.target.value)} />
+      <div className="col-span-2 space-y-2">
         <input type="file" onChange={e=>setFile(e.target.files?.[0] || null)} />
         {file && (
           <div className="flex items-center gap-3">
@@ -66,7 +66,7 @@ export default function AddVehicle() {
           </div>
         )}
       </div>
-      <button className="btn md:col-span-2">Create Auction</button>
+      <button className="btn col-span-2">Create Auction</button>
     </form>
   )
 }

@@ -12,9 +12,9 @@ import SiteFooter from '../components/SiteFooter.jsx'
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
-      <main className="max-w-6xl mx-auto px-4 pt-20">
+      <main className="flex-1 max-w-6xl mx-auto px-4 pt-20">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/vehicle/:id" element={<VehicleDetails />} />

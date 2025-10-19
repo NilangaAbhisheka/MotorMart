@@ -38,7 +38,7 @@ export default function VehicleDetails() {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 gap-6">
         <img src={vehicle.imageUrl} alt={vehicle.title} className="w-full rounded-lg shadow-card" />
         <div className="card p-5 space-y-4">
           <div className="text-2xl font-semibold">{vehicle.title}</div>

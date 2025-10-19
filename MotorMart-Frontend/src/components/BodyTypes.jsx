@@ -9,7 +9,7 @@ export default function BodyTypes({ onBodyTypeSelect, selectedBodyType }) {
           <div className="text-sm uppercase tracking-wide text-muted">Find your style</div>
           <h3 className="text-xl font-semibold">Search by Body Type</h3>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-4 gap-3">
           {types.map((t, i) => (
             <button 
               key={i} 

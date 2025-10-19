@@ -7,7 +7,7 @@ export default function StatsStrip() {
   ]
   return (
     <section className="py-8 bg-white">
-      <div className="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="max-w-6xl mx-auto px-4 grid grid-cols-4 gap-4">
         {stats.map((s, i) => (
           <div key={i} className="card p-4 text-center">
             <div className="text-2xl font-bold text-slate-900">{s.value}</div>

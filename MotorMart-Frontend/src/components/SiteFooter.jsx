@@ -1,7 +1,7 @@
 export default function SiteFooter() {
   return (
-    <footer className="bg-slate-900 text-white mt-10">
-      <div className="max-w-6xl mx-auto px-4 py-8 grid grid-cols-2 md:grid-cols-4 gap-6">
+    <footer className="bg-slate-900 text-white">
+      <div className="max-w-6xl mx-auto px-4 py-8 grid grid-cols-4 gap-6">
         <div>
           <div className="font-semibold mb-2">AutoBid</div>
           <div className="text-sm text-white/70">Customer support</div>
