@@ -1,9 +1,9 @@
 export default function SiteFooter() {
   return (
-    <footer className="bg-slate-900 text-white">
+    <footer className="bg-black text-white">
       <div className="max-w-6xl mx-auto px-4 py-8 grid grid-cols-4 gap-6">
         <div>
-          <div className="font-semibold mb-2">AutoBid</div>
+          <div className="font-semibold mb-2">MotorMart</div>
           <div className="text-sm text-white/70">Customer support</div>
         </div>
         <div>
@@ -15,11 +15,11 @@ export default function SiteFooter() {
           </ul>
         </div>
         <div>
-          <div className="font-semibold mb-2">AutoBid</div>
+          <div className="font-semibold mb-2">Company</div>
           <ul className="space-y-1 text-white/70 text-sm">
-            <li>About</li>
-            <li>Contact</li>
-            <li>Terms</li>
+            <li><a href="/about" className="hover:text-white transition-colors">About</a></li>
+            <li><a href="/contact" className="hover:text-white transition-colors">Contact</a></li>
+            <li><a href="/shop" className="hover:text-white transition-colors">Shop</a></li>
           </ul>
         </div>
         <div>

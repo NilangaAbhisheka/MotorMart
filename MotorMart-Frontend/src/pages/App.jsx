@@ -7,6 +7,9 @@ import Register from './Register.jsx'
 import AddVehicle from './AddVehicle.jsx'
 import MyBids from './MyBids.jsx'
 import SellerDashboard from './SellerDashboard.jsx'
+import Shop from './Shop.jsx'
+import About from './About.jsx'
+import Contact from './Contact.jsx'
 import ProtectedRoute from '../routes/ProtectedRoute.jsx'
 import SiteFooter from '../components/SiteFooter.jsx'
 
@@ -14,9 +17,12 @@ export default function App() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
-      <main className="flex-1 max-w-6xl mx-auto px-4 pt-20">
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/shop" element={<Shop />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/vehicle/:id" element={<VehicleDetails />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />

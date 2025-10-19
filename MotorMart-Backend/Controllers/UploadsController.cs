@@ -15,20 +15,39 @@ namespace MotorMart_Backend.Controllers
 
         [HttpPost]
         [Authorize]
-        [RequestSizeLimit(10_000_000)] // ~10MB
+        [RequestSizeLimit(20_000_000)] // ~20MB
         public async Task<IActionResult> Upload([FromForm] IFormFile file)
         {
-            if (file == null || file.Length == 0) return BadRequest("No file uploaded");
-            var uploadsPath = Path.Combine(_env.ContentRootPath, "uploads");
-            if (!Directory.Exists(uploadsPath)) Directory.CreateDirectory(uploadsPath);
+            try
+            {
+                if (file == null || file.Length == 0) 
+                    return BadRequest(new { message = "No file uploaded" });
+                
+                if (file.Length > 20_000_000) 
+                    return BadRequest(new { message = "File too large. Maximum size is 20MB." });
+                
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+                var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
+                if (!allowedExtensions.Contains(fileExtension))
+                    return BadRequest(new { message = "Invalid file type. Only images are allowed." });
 
-            var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
-            var filePath = Path.Combine(uploadsPath, fileName);
-            await using var stream = System.IO.File.Create(filePath);
-            await file.CopyToAsync(stream);
+                var uploadsPath = Path.Combine(_env.ContentRootPath, "uploads");
+                if (!Directory.Exists(uploadsPath)) 
+                    Directory.CreateDirectory(uploadsPath);
 
-            var url = $"/uploads/{fileName}";
-            return Ok(new { url });
+                var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
+                var filePath = Path.Combine(uploadsPath, fileName);
+                
+                await using var stream = System.IO.File.Create(filePath);
+                await file.CopyToAsync(stream);
+
+                var url = $"/uploads/{fileName}";
+                return Ok(new { url });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error uploading file", error = ex.Message });
+            }
         }
     }
 }
