@@ -1,0 +1,210 @@
+# =========================================
+# OS and Editor Files
+# =========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# =========================================
+# React Frontend (MotorMart-Frontend)
+# =========================================
+# Dependencies
+MotorMart-Frontend/node_modules/
+MotorMart-Frontend/.pnp
+MotorMart-Frontend/.pnp.js
+
+# Production builds
+MotorMart-Frontend/build/
+MotorMart-Frontend/dist/
+
+# Environment variables
+MotorMart-Frontend/.env
+MotorMart-Frontend/.env.local
+MotorMart-Frontend/.env.development.local
+MotorMart-Frontend/.env.test.local
+MotorMart-Frontend/.env.production.local
+
+# Logs
+MotorMart-Frontend/npm-debug.log*
+MotorMart-Frontend/yarn-debug.log*
+MotorMart-Frontend/yarn-error.log*
+MotorMart-Frontend/lerna-debug.log*
+
+# Runtime data
+MotorMart-Frontend/pids
+MotorMart-Frontend/*.pid
+MotorMart-Frontend/*.seed
+MotorMart-Frontend/*.pid.lock
+
+# Coverage directory used by tools like istanbul
+MotorMart-Frontend/coverage/
+MotorMart-Frontend/.nyc_output
+
+# Dependency directories
+MotorMart-Frontend/jspm_packages/
+
+# Optional npm cache directory
+MotorMart-Frontend/.npm
+
+# Optional eslint cache
+MotorMart-Frontend/.eslintcache
+
+# Microbundle cache
+MotorMart-Frontend/.rpt2_cache/
+MotorMart-Frontend/.rts2_cache_cjs/
+MotorMart-Frontend/.rts2_cache_es/
+MotorMart-Frontend/.rts2_cache_umd/
+
+# Optional REPL history
+MotorMart-Frontend/.node_repl_history
+
+# Output of 'npm pack'
+MotorMart-Frontend/*.tgz
+
+# Yarn Integrity file
+MotorMart-Frontend/.yarn-integrity
+
+# parcel-bundler cache (https://parceljs.org/)
+MotorMart-Frontend/.cache
+MotorMart-Frontend/.parcel-cache
+
+# Next.js build output
+MotorMart-Frontend/.next
+
+# Nuxt.js build / generate output
+MotorMart-Frontend/.nuxt
+MotorMart-Frontend/dist
+
+# Gatsby files
+MotorMart-Frontend/.cache/
+MotorMart-Frontend/public
+
+# Storybook build outputs
+MotorMart-Frontend/.out
+MotorMart-Frontend/.storybook-out
+
+# Temporary folders
+MotorMart-Frontend/tmp/
+MotorMart-Frontend/temp/
+
+# =========================================
+# ASP.NET Backend (MotorMart-Backend)
+# =========================================
+# Build outputs
+MotorMart-Backend/bin/
+MotorMart-Backend/obj/
+MotorMart-Backend/out/
+
+# Visual Studio files
+MotorMart-Backend/.vs/
+MotorMart-Backend/.user
+MotorMart-Backend/.userosscache
+MotorMart-Backend/.suo
+MotorMart-Backend/.userprefs
+MotorMart-Backend/.tmp/
+
+# Logs
+MotorMart-Backend/logs/
+MotorMart-Backend/log/
+
+# Environment and configuration files
+MotorMart-Backend/appsettings.Development.json
+MotorMart-Backend/appsettings.*.json
+MotorMart-Backend/secrets.json
+MotorMart-Backend/appsettings.Production.json
+
+# Database files
+MotorMart-Backend/*.db
+MotorMart-Backend/*.sqlite
+MotorMart-Backend/*.sqlite3
+
+# Publish folder
+MotorMart-Backend/publish/
+MotorMart-Backend/wwwroot/
+
+# Editor files
+MotorMart-Backend/.vscode/
+MotorMart-Backend/.idea/
+
+# JetBrains Rider
+MotorMart-Backend/.idea/
+MotorMart-Backend/*.sln.iml
+
+# =========================================
+# Project-wide ignores
+# =========================================
+# NuGet packages
+*.nupkg
+*.snupkg
+
+# Package files
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Backup files
+*.backup
+*.bak
+*.orig
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Certificate files
+*.pfx
+*.p12
+
+# Local development files
+local.properties
+.env.local
+.env.*.local
+
+# IDE and editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+*.sublime-*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+tmp/
+
+# =========================================
+# Uploaded files (keep structure but ignore content)
+# =========================================
+MotorMart-Backend/uploads/*
+!MotorMart-Backend/uploads/.gitkeep
