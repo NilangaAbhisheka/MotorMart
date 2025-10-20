@@ -12,6 +12,7 @@ export default function VehicleDetails() {
   const [bids, setBids] = useState([])
   const [amount, setAmount] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const { isAuthenticated, user } = useAuth()
   const toast = useToast()
 
@@ -76,6 +77,22 @@ export default function VehicleDetails() {
 
   const placeholderImage = `https://images.unsplash.com/photo-${Math.floor(Math.random() * 1000000)}?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80`
   const isEnded = new Date(vehicle.auctionEndTime) <= new Date()
+  
+  // Get all images (cover image + additional images)
+  const allImages = []
+  if (vehicle.imageUrl) {
+    allImages.push(vehicle.imageUrl)
+  }
+  if (vehicle.images && vehicle.images.length > 0) {
+    vehicle.images.forEach(img => {
+      if (img.imageUrl && img.imageUrl !== vehicle.imageUrl) {
+        allImages.push(img.imageUrl)
+      }
+    })
+  }
+  
+  // If no images, use placeholder
+  const displayImages = allImages.length > 0 ? allImages : [placeholderImage]
 
   return (
     <div className="space-y-8">
@@ -91,7 +108,7 @@ export default function VehicleDetails() {
           <div className="space-y-4">
             <div className="relative overflow-hidden rounded-2xl shadow-large">
               <img 
-                src={vehicle.imageUrl || placeholderImage} 
+                src={displayImages[selectedImageIndex] || placeholderImage} 
                 alt={vehicle.title} 
                 className={`w-full h-96 lg:h-[500px] object-cover transition-all duration-300 ${isEnded ? 'grayscale' : ''}`}
                 onError={(e) => {
@@ -111,23 +128,55 @@ export default function VehicleDetails() {
                   </div>
                 </div>
               )}
+              
+              {/* Image Navigation Arrows */}
+              {displayImages.length > 1 && (
+                <>
+                  <button
+                    onClick={() => setSelectedImageIndex(prev => prev > 0 ? prev - 1 : displayImages.length - 1)}
+                    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-neutral-800 rounded-full p-2 shadow-lg transition-all"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => setSelectedImageIndex(prev => prev < displayImages.length - 1 ? prev + 1 : 0)}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-neutral-800 rounded-full p-2 shadow-lg transition-all"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </>
+              )}
             </div>
             
-            {/* Additional Images Placeholder */}
-            <div className="grid grid-cols-4 gap-2">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="aspect-square bg-neutral-100 rounded-lg overflow-hidden">
-                  <img 
-                    src={`https://images.unsplash.com/photo-${Math.floor(Math.random() * 1000000)}?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200&q=80`}
-                    alt={`Gallery ${i}`}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"
-                    onError={(e) => {
-                      e.target.src = placeholderImage
-                    }}
-                  />
-                </div>
-              ))}
-            </div>
+            {/* Image Thumbnails */}
+            {displayImages.length > 1 && (
+              <div className="grid grid-cols-4 gap-2">
+                {displayImages.map((image, index) => (
+                  <div 
+                    key={index} 
+                    className={`aspect-square rounded-lg overflow-hidden cursor-pointer transition-all ${
+                      selectedImageIndex === index 
+                        ? 'ring-2 ring-primary-500 ring-offset-2' 
+                        : 'hover:ring-2 hover:ring-primary-300'
+                    }`}
+                    onClick={() => setSelectedImageIndex(index)}
+                  >
+                    <img 
+                      src={image}
+                      alt={`Gallery ${index + 1}`}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform"
+                      onError={(e) => {
+                        e.target.src = placeholderImage
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Vehicle Info & Bidding */}

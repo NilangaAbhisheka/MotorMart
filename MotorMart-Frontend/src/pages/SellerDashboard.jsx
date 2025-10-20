@@ -4,17 +4,33 @@ import { Link } from 'react-router-dom'
 import EmptyState from '../components/EmptyState.jsx'
 import CountdownTimer from '../components/CountdownTimer.jsx'
 import { useToast } from '../components/Toast.jsx'
+import { useAuth } from '../state/AuthContext.jsx'
 
 export default function SellerDashboard() {
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState({})
   const toast = useToast()
+  const { user } = useAuth()
 
-  useEffect(() => { load() }, [])
+  useEffect(() => { 
+    if (user?.id) {
+      load() 
+    }
+  }, [user?.id])
 
   async function load() {
-    const res = await api.get('/api/vehicles')
-    setItems(res.data)
+    if (!user?.id) {
+      toast.error('User not authenticated')
+      return
+    }
+    
+    try {
+      const res = await api.get(`/api/vehicles/seller/${user.id}`)
+      setItems(res.data)
+    } catch (error) {
+      console.error('Error loading seller vehicles:', error)
+      toast.error('Failed to load your vehicles')
+    }
   }
 
   async function pauseAuction(vehicleId) {

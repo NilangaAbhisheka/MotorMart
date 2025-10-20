@@ -165,6 +165,21 @@ namespace MotorMart_Backend.Controllers
             };
             _db.Vehicles.Add(vehicle);
             await _db.SaveChangesAsync();
+
+            // Add multiple images if provided
+            if (request.Images != null && request.Images.Any())
+            {
+                var vehicleImages = request.Images.Select((img, index) => new VehicleImages
+                {
+                    VehicleId = vehicle.Id,
+                    ImageUrl = img.Url,
+                    DisplayOrder = index,
+                    CreatedAt = DateTime.UtcNow
+                }).ToList();
+
+                _db.VehicleImages.AddRange(vehicleImages);
+                await _db.SaveChangesAsync();
+            }
             
             // Return a clean response without navigation properties to avoid circular references
             return CreatedAtAction(nameof(GetById), new { id = vehicle.Id }, new
@@ -234,6 +249,53 @@ namespace MotorMart_Backend.Controllers
             });
         }
 
+        [HttpGet("seller/{sellerId}")]
+        [Authorize(Roles = "Seller,Admin")]
+        public async Task<IActionResult> GetBySeller(int sellerId)
+        {
+            // Verify the authenticated user is requesting their own vehicles or is an admin
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type.EndsWith("/nameidentifier") || c.Type.Contains("sub"));
+            if (userIdClaim == null) return Unauthorized();
+            var authenticatedUserId = int.Parse(userIdClaim.Value);
+            
+            // Check if user is admin or requesting their own vehicles
+            var isAdmin = User.IsInRole("Admin");
+            if (!isAdmin && authenticatedUserId != sellerId)
+            {
+                return Forbid("You can only view your own vehicles");
+            }
+
+            var vehicles = await _db.Vehicles
+                .Where(v => v.SellerId == sellerId)
+                .Include(v => v.Seller)
+                .Select(v => new
+                {
+                    v.Id,
+                    v.Title,
+                    v.Make,
+                    v.Model,
+                    v.Year,
+                    v.BodyType,
+                    v.CurrentPrice,
+                    v.ReservePrice,
+                    v.ImageUrl,
+                    v.AuctionEndTime,
+                    v.IsClosed,
+                    v.IsSold,
+                    v.IsPaused,
+                    v.StartingPrice,
+                    Seller = new
+                    {
+                        v.Seller!.Username,
+                        v.Seller.IsVerified
+                    }
+                })
+                .OrderByDescending(v => v.Id)
+                .ToListAsync();
+
+            return Ok(vehicles);
+        }
+
         [HttpDelete("{id}")]
         [Authorize(Roles = "Seller,Admin")]
         public async Task<IActionResult> Delete(int id)
@@ -265,6 +327,15 @@ namespace MotorMart_Backend.Controllers
         public int? OwnershipCount { get; set; }
         public string? ConditionGrade { get; set; }
         public string? HighlightChips { get; set; }
+        
+        // Multiple Images
+        public List<VehicleImageRequest>? Images { get; set; }
+    }
+
+    public class VehicleImageRequest
+    {
+        public string Url { get; set; } = string.Empty;
+        public int DisplayOrder { get; set; } = 0;
     }
 
     public class UpdateVehicleRequest

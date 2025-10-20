@@ -7,7 +7,8 @@ export default function AddVehicle() {
     title: '', make: '', model: '', year: '', bodyType: '', description: '', startingPrice: '', auctionEndTime: '',
     reservePrice: '', vin: '', serviceHistory: false, ownershipCount: '', conditionGrade: '', highlightChips: []
   })
-  const [file, setFile] = useState(null)
+  const [files, setFiles] = useState([])
+  const [coverImageIndex, setCoverImageIndex] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const toast = useToast()
   const [touched, setTouched] = useState({ title:false, make:false, model:false, year:false, startingPrice:false, auctionEndTime:false })
@@ -27,26 +28,56 @@ export default function AddVehicle() {
   }
 
   function handleFileChange(e) {
-    const selectedFile = e.target.files?.[0] || null
-    if (selectedFile) {
+    const selectedFiles = Array.from(e.target.files || [])
+    
+    if (selectedFiles.length === 0) return
+    
+    // Check if adding these files would exceed the limit
+    if (files.length + selectedFiles.length > 5) {
+      toast.error('Maximum 5 images allowed')
+      e.target.value = ''
+      return
+    }
+    
+    const validFiles = []
+    
+    for (const file of selectedFiles) {
       // Check file size (20MB limit)
-      if (selectedFile.size > 20 * 1024 * 1024) {
-        toast.error('File too large. Maximum size is 20MB.')
-        setFile(null)
-        e.target.value = '' // Clear the input
-        return
+      if (file.size > 20 * 1024 * 1024) {
+        toast.error(`File ${file.name} is too large. Maximum size is 20MB.`)
+        continue
       }
       
       // Check file type
       const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
-      if (!allowedTypes.includes(selectedFile.type)) {
-        toast.error('Invalid file type. Only images (JPG, PNG, GIF, WebP) are allowed.')
-        setFile(null)
-        e.target.value = '' // Clear the input
-        return
+      if (!allowedTypes.includes(file.type)) {
+        toast.error(`Invalid file type for ${file.name}. Only images (JPG, PNG, GIF, WebP) are allowed.`)
+        continue
       }
+      
+      validFiles.push(file)
     }
-    setFile(selectedFile)
+    
+    if (validFiles.length > 0) {
+      setFiles(prev => [...prev, ...validFiles])
+    }
+    
+    e.target.value = '' // Clear the input
+  }
+
+  function removeFile(index) {
+    setFiles(prev => {
+      const newFiles = prev.filter((_, i) => i !== index)
+      // Adjust cover image index if needed
+      if (coverImageIndex >= newFiles.length) {
+        setCoverImageIndex(Math.max(0, newFiles.length - 1))
+      }
+      return newFiles
+    })
+  }
+
+  function setCoverImage(index) {
+    setCoverImageIndex(index)
   }
 
   async function onSubmit(e) {
@@ -62,19 +93,34 @@ export default function AddVehicle() {
     
     try {
       let imageUrl = ''
-      if (file) {
-        console.log('Uploading file:', file.name, 'Size:', file.size)
+      let images = []
+      
+      if (files.length > 0) {
+        console.log('Uploading files:', files.length)
         const data = new FormData()
-        data.append('file', file)
+        files.forEach(file => {
+          data.append('files', file)
+        })
         
-        // Add proper headers for file upload
-        const res = await api.post('/api/uploads', data, {
+        // Upload multiple files
+        const res = await api.post('/api/uploads/multiple', data, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
         })
-        imageUrl = res.data.url
-        console.log('File uploaded successfully:', imageUrl)
+        
+        const uploadedFiles = res.data.files
+        images = uploadedFiles.map((file, index) => ({
+          url: file.url,
+          displayOrder: index
+        }))
+        
+        // Set cover image (first image or selected cover image)
+        if (uploadedFiles.length > 0) {
+          imageUrl = uploadedFiles[coverImageIndex]?.url || uploadedFiles[0].url
+        }
+        
+        console.log('Files uploaded successfully:', uploadedFiles.length)
       }
       
       const payload = {
@@ -84,14 +130,16 @@ export default function AddVehicle() {
         reservePrice: form.reservePrice ? Number(form.reservePrice) : null,
         ownershipCount: form.ownershipCount ? Number(form.ownershipCount) : null,
         highlightChips: JSON.stringify(form.highlightChips),
-        imageUrl
+        imageUrl,
+        images
       }
       
       console.log('Creating vehicle with payload:', payload)
       await api.post('/api/vehicles', payload)
       
       setForm({ title: '', make: '', model: '', year: '', bodyType: '', description: '', startingPrice: '', auctionEndTime: '', reservePrice: '', vin: '', serviceHistory: false, ownershipCount: '', conditionGrade: '', highlightChips: [] })
-      setFile(null)
+      setFiles([])
+      setCoverImageIndex(0)
       toast.success('Vehicle created successfully')
     } catch (err) {
       console.error('Error creating vehicle:', err.response?.data || err.message)
@@ -381,16 +429,17 @@ export default function AddVehicle() {
 
             {/* Image Upload */}
             <div>
-              <h2 className="heading-4 mb-6 text-neutral-900">Vehicle Image</h2>
+              <h2 className="heading-4 mb-6 text-neutral-900">Vehicle Images</h2>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-semibold text-neutral-700 mb-2">
-                    Upload Image
+                    Upload Images (Up to 5 images)
                   </label>
                   <div className="border-2 border-dashed border-neutral-300 rounded-lg p-6 text-center hover:border-primary-400 transition-colors">
                     <input 
                       type="file" 
                       accept="image/*" 
+                      multiple
                       onChange={handleFileChange}
                       className="hidden"
                       id="file-upload"
@@ -400,48 +449,85 @@ export default function AddVehicle() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                       </svg>
                       <div className="text-neutral-600 font-medium mb-2">
-                        {file ? 'Change Image' : 'Click to upload image'}
+                        {files.length > 0 ? 'Add More Images' : 'Click to upload images'}
                       </div>
                       <div className="text-sm text-neutral-500">
-                        PNG, JPG, GIF up to 20MB
+                        PNG, JPG, GIF up to 20MB each • {files.length}/5 images
                       </div>
                     </label>
                   </div>
                 </div>
                 
-                {file && (
-                  <div className="bg-neutral-50 rounded-lg p-4">
-                    <div className="flex items-center gap-4">
-                      <img 
-                        src={URL.createObjectURL(file)} 
-                        alt="Preview" 
-                        className="w-24 h-24 object-cover rounded-lg" 
-                      />
-                      <div className="flex-1">
-                        <div className="font-medium text-neutral-900">{file.name}</div>
-                        <div className="text-sm text-neutral-600">
-                          Size: {(file.size / (1024 * 1024)).toFixed(2)} MB
+                {files.length > 0 && (
+                  <div className="space-y-4">
+                    <div className="text-sm font-semibold text-neutral-700">
+                      Uploaded Images ({files.length}/5)
+                    </div>
+                    
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {files.map((file, index) => (
+                        <div key={index} className="relative group">
+                          <div className={`relative rounded-lg overflow-hidden border-2 ${
+                            coverImageIndex === index 
+                              ? 'border-primary-500 ring-2 ring-primary-200' 
+                              : 'border-neutral-200'
+                          }`}>
+                            <img 
+                              src={URL.createObjectURL(file)} 
+                              alt={`Preview ${index + 1}`} 
+                              className="w-full h-32 object-cover" 
+                            />
+                            
+                            {/* Cover Image Badge */}
+                            {coverImageIndex === index && (
+                              <div className="absolute top-2 left-2 bg-primary-500 text-white px-2 py-1 rounded text-xs font-semibold">
+                                Cover Image
+                              </div>
+                            )}
+                            
+                            {/* Remove Button */}
+                            <button
+                              type="button"
+                              onClick={() => removeFile(index)}
+                              className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          </div>
+                          
+                          {/* Set as Cover Button */}
+                          {coverImageIndex !== index && (
+                            <button
+                              type="button"
+                              onClick={() => setCoverImage(index)}
+                              className="w-full mt-2 px-3 py-1 text-xs font-medium text-primary-600 bg-primary-50 hover:bg-primary-100 rounded-md transition-colors"
+                            >
+                              Set as Cover
+                            </button>
+                          )}
+                          
+                          <div className="mt-1 text-xs text-neutral-500 truncate">
+                            {file.name}
+                          </div>
                         </div>
-                        <div className="text-sm text-neutral-600">
-                          Type: {file.type}
+                      ))}
+                    </div>
+                    
+                    {files.length > 1 && (
+                      <div className="text-sm text-neutral-600 bg-blue-50 p-3 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <span>The cover image will be displayed as the main image in listings and search results.</span>
                         </div>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setFile(null)
-                          document.getElementById('file-upload').value = ''
-                        }}
-                        className="text-neutral-400 hover:text-neutral-600"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-            </div>
-          </div>
-        )}
-      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Submit Button */}

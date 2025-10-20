@@ -144,6 +144,8 @@ MotorMart-Backend/.idea/
 MotorMart-Backend/.idea/
 MotorMart-Backend/*.sln.iml
 
+#uploads
+MotorMart-Backend/uploads/*
 # =========================================
 # Project-wide ignores
 # =========================================

@@ -49,6 +49,59 @@ namespace MotorMart_Backend.Controllers
                 return StatusCode(500, new { message = "Error uploading file", error = ex.Message });
             }
         }
+
+        [HttpPost("multiple")]
+        [Authorize]
+        [RequestSizeLimit(100_000_000)] // ~100MB for multiple files
+        public async Task<IActionResult> UploadMultiple([FromForm] List<IFormFile> files)
+        {
+            try
+            {
+                if (files == null || files.Count == 0) 
+                    return BadRequest(new { message = "No files uploaded" });
+
+                if (files.Count > 5) 
+                    return BadRequest(new { message = "Maximum 5 images allowed" });
+
+                var uploadsPath = Path.Combine(_env.ContentRootPath, "uploads");
+                if (!Directory.Exists(uploadsPath)) 
+                    Directory.CreateDirectory(uploadsPath);
+
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+                var uploadedFiles = new List<object>();
+
+                foreach (var file in files)
+                {
+                    if (file.Length == 0) continue;
+                    
+                    if (file.Length > 20_000_000) 
+                        return BadRequest(new { message = $"File {file.FileName} is too large. Maximum size is 20MB." });
+                    
+                    var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
+                    if (!allowedExtensions.Contains(fileExtension))
+                        return BadRequest(new { message = $"Invalid file type for {file.FileName}. Only images are allowed." });
+
+                    var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
+                    var filePath = Path.Combine(uploadsPath, fileName);
+                    
+                    await using var stream = System.IO.File.Create(filePath);
+                    await file.CopyToAsync(stream);
+
+                    var url = $"/uploads/{fileName}";
+                    uploadedFiles.Add(new { 
+                        url = url, 
+                        fileName = file.FileName,
+                        size = file.Length 
+                    });
+                }
+
+                return Ok(new { files = uploadedFiles });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error uploading files", error = ex.Message });
+            }
+        }
     }
 }
 
