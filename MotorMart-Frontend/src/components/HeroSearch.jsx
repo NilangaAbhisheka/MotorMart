@@ -18,8 +18,8 @@ export default function HeroSearch({ query, onChange, onSearch }) {
           </div>
         </div>
       </div>
-      <div className="mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="-mt 10 bg-white rounded-xl shadow-card p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8 w-full">
+          <div className="-mt-10 bg-white rounded-xl shadow-card p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           <input placeholder="Make" className="input h-[42px]" value={query.make} onChange={e=>onChange({ ...query, make: e.target.value })} />
           <input placeholder="Model" className="input h-[42px]" value={query.model} onChange={e=>onChange({ ...query, model: e.target.value })} />
           <input placeholder="Min Year" className="input h-[42px]" value={query.minYear || ''} onChange={e=>onChange({ ...query, minYear: e.target.value })} />
