@@ -3,7 +3,7 @@ import { useAuth } from '../state/AuthContext.jsx'
 
 export default function Navbar() {
   const { isAuthenticated, user, logout } = useAuth()
-  const LOGO_URL = import.meta.env?.VITE_LOGO_URL
+  const LOGO_URL = "assets/logo.png"
 
   const linkBase = 'px-4 py-2 rounded-lg transition-all duration-300 font-medium text-sm'
   const linkClass = ({ isActive }) =>
@@ -18,7 +18,7 @@ export default function Navbar() {
               <img
                 src={LOGO_URL}
                 alt="MotorMart logo"
-                className="h-10 w-10 rounded-xl shadow-md object-cover"
+                className="h-30 w-30 "
                 referrerPolicy="no-referrer"
               />
             ) : (
@@ -26,7 +26,7 @@ export default function Navbar() {
                 <span className="text-white font-bold text-lg">M</span>
               </div>
             )}
-            <span className="hidden sm:block">MotorMart</span>
+            
           </Link>
           
           <div className="flex items-center gap-2">

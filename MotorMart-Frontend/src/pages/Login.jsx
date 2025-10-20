@@ -10,7 +10,7 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false)
   const { login } = useAuth()
   const navigate = useNavigate()
-  const LOGO_URL = import.meta.env?.VITE_LOGO_URL
+  const LOGO_URL = "assets/logo.png"
 
   async function onSubmit(e) {
     e.preventDefault()
@@ -36,14 +36,14 @@ export default function Login() {
           <div className="relative hidden lg:flex flex-col justify-between rounded-3xl bg-white/5 border border-white/10 backdrop-blur-sm shadow-large p-10 min-h-[560px] text-white">
             <div>
               <div className="flex items-center gap-3">
-                <div className="h-12 w-12 rounded-2xl bg-white/15 flex items-center justify-center shadow-soft">
+                <div className="h-50 w-60  -mb-10 ">
                   {LOGO_URL ? (
-                    <img src={LOGO_URL} alt="MotorMart logo" className="h-12 w-12 rounded-2xl object-cover" referrerPolicy="no-referrer" />
+                    <img src={LOGO_URL} alt="MotorMart logo" className="h-50 w-60 " referrerPolicy="no-referrer" />
                   ) : (
                     <span className="text-white font-bold text-xl">M</span>
                   )}
                 </div>
-                <span className="text-xl font-bold">MotorMart</span>
+                
               </div>
               <h1 className="mt-12 text-4xl font-extrabold leading-tight">Create
                 <br /> New Account</h1>
