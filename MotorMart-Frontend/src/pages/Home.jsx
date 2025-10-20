@@ -37,23 +37,21 @@ export default function Home() {
   return (
     <div className="space-y-16">
       {/* Hero Section */}
-      <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800">
-          <img 
-            src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-            alt="Luxury Cars"
-            className="w-full h-full object-cover opacity-20"
-          />
+      <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-gradient-primary">
+        {/* Decorative white shapes */}
+        <div className="pointer-events-none select-none">
+          <div className="absolute -top-10 -left-10 h-40 w-40 bg-white/10 rounded-full blur-2xl"></div>
+          <div className="absolute -bottom-8 -right-8 h-32 w-32 bg-white/10 rounded-full blur-xl"></div>
+          <div className="absolute top-10 right-10 h-24 w-24 bg-white/15 rounded-3xl rotate-12"></div>
         </div>
-        <div className="absolute inset-0 bg-gradient-to-r from-primary-900/80 via-primary-800/60 to-transparent"></div>
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="animate-fade-in">
             <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
               Find Your Dream
-              <span className="block text-accent-400">Vehicle</span>
+              <span className="block text-white/90">Vehicle</span>
             </h1>
-            <p className="text-xl md:text-2xl text-primary-100 mb-8 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl md:text-2xl text-white/80 mb-8 max-w-3xl mx-auto leading-relaxed">
               Discover premium vehicles through our transparent, secure auction platform. 
               From luxury cars to everyday vehicles, find exactly what you're looking for.
             </p>
@@ -64,21 +62,16 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
               </a>
-              <a href="/about" className="btn-outline btn-lg text-white border-white hover:bg-white hover:text-primary">
+              <a href="/about" className="px-6 py-3 rounded-lg bg-white text-blue-600 font-semibold shadow-soft hover:bg-slate-100 transition-colors">
                 Learn More
               </a>
             </div>
           </div>
         </div>
-        
-        {/* Floating Elements */}
-        <div className="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-16 h-16 bg-accent-400/20 rounded-full animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-20 w-12 h-12 bg-white/5 rounded-full animate-pulse delay-500"></div>
       </section>
 
       {/* Search Section */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="max-w-7xl mx-auto px-0 sm:px-0 lg:px-0">
         <HeroSearch query={query} onChange={setQuery} onSearch={()=>{}} />
       </section>
 
@@ -94,34 +87,50 @@ export default function Home() {
 
       {/* Featured Vehicles */}
       <section id="featured" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="heading-2 mb-4">Featured Vehicles</h2>
-          <p className="text-body text-neutral-600 max-w-2xl mx-auto">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-semibold text-xs">
+            <span>Top Picks</span>
+          </div>
+          <h2 className="heading-2 mt-3">Featured Vehicles</h2>
+          <div className="mt-3 flex justify-center">
+            <span className="h-1 w-24 bg-gradient-primary rounded-full"></span>
+          </div>
+          <p className="mt-4 text-body text-neutral-600 max-w-2xl mx-auto">
             Discover our handpicked selection of premium vehicles currently up for auction
           </p>
         </div>
-        <div className="grid-responsive">
-          {featuredVehicles.map(v => <AuctionCard key={v.id} vehicle={v} />)}
+        <div className="rounded-3xl p-6 md:p-8 bg-white/80 backdrop-blur-sm border border-neutral-200/60 shadow-soft">
+          <div className="grid-responsive">
+            {featuredVehicles.map(v => <AuctionCard key={v.id} vehicle={v} />)}
+          </div>
         </div>
       </section>
 
       {/* Filter Section */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="card p-8">
+        <div className="card p-8 border-gradient bg-white/95 backdrop-blur-sm">
           <FilterBar query={query} onChange={setQuery} />
         </div>
       </section>
 
       {/* Ending Soon */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="heading-2 mb-4">Ending Soon</h2>
-          <p className="text-body text-neutral-600">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 text-amber-700 font-semibold text-xs">
+            <span>Hurry Up</span>
+          </div>
+          <h2 className="heading-2 mt-3">Ending Soon</h2>
+          <div className="mt-3 flex justify-center">
+            <span className="h-1 w-20 bg-gradient-secondary rounded-full"></span>
+          </div>
+          <p className="mt-4 text-body text-neutral-600">
             Don't miss out on these auctions ending in the next 24 hours
           </p>
         </div>
-        <div className="grid-responsive">
-          {endingSoon.map(v => <AuctionCard key={v.id} vehicle={v} highlight={true} />)}
+        <div className="rounded-3xl p-6 md:p-8 bg-white/80 backdrop-blur-sm border border-neutral-200/60 shadow-soft">
+          <div className="grid-responsive">
+            {endingSoon.map(v => <AuctionCard key={v.id} vehicle={v} highlight={true} />)}
+          </div>
         </div>
       </section>
 
@@ -150,8 +159,24 @@ export default function Home() {
         <BodyTypes onBodyTypeSelect={(bodyType) => setQuery({...query, bodyType})} selectedBodyType={query.bodyType} />
       </section>
 
-      {/* Newsletter */}
+      {/* Primary CTA Band */}
       <section className="bg-gradient-primary">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6 text-white">
+            <div>
+              <h3 className="text-2xl md:text-3xl font-bold">Ready to sell your vehicle?</h3>
+              <p className="mt-1 text-white/90">List your car in minutes and reach serious buyers.</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <a href="/add-vehicle" className="px-5 py-3 rounded-lg bg-white text-blue-600 font-semibold shadow-soft hover:bg-slate-100 transition-colors">Start Selling</a>
+              <a href="/about" className="px-5 py-3 rounded-lg border border-white/70 text-white font-semibold hover:bg-white/10 transition-colors">Learn More</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Newsletter */}
+      <section className="bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <NewsletterCTA />
         </div>
