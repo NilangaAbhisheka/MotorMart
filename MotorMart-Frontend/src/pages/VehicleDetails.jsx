@@ -4,6 +4,7 @@ import api from '../api/axios.js'
 import { useAuth } from '../state/AuthContext.jsx'
 import { useToast } from '../components/Toast.jsx'
 import CountdownTimer from '../components/CountdownTimer.jsx'
+import Breadcrumbs from '../components/Breadcrumbs.jsx'
 
 export default function VehicleDetails() {
   const { id } = useParams()
@@ -78,6 +79,11 @@ export default function VehicleDetails() {
 
   return (
     <div className="space-y-8">
+      <Breadcrumbs items={[
+        { label: 'Home', href: '/' },
+        { label: 'Shop', href: '/shop' },
+        { label: vehicle.title }
+      ]} />
       {/* Hero Section */}
       <div className="relative">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -137,6 +143,21 @@ export default function VehicleDetails() {
                     <span>•</span>
                     <span className="font-medium">{vehicle.year}</span>
                   </div>
+                  
+                  {/* Seller Info with Verification */}
+                  {vehicle.seller && (
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="text-sm text-neutral-600">by {vehicle.seller.username}</span>
+                      {vehicle.seller.isVerified && (
+                        <span className="inline-flex items-center text-green-600" title="Verified Seller">
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          </svg>
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  
                   {vehicle.bodyType && (
                     <div className="mt-2">
                       <span className="inline-block bg-primary-100 text-primary-800 px-3 py-1 rounded-full text-sm font-medium">
@@ -150,11 +171,52 @@ export default function VehicleDetails() {
                   <div>
                     <div className="text-sm text-neutral-600 mb-1">Current Price</div>
                     <div className="text-3xl font-bold text-primary">${vehicle.currentPrice?.toLocaleString()}</div>
+                    {vehicle.reservePrice && (
+                      <div className="text-sm text-neutral-500 mt-1">
+                        Reserve: ${vehicle.reservePrice.toLocaleString()}
+                      </div>
+                    )}
                   </div>
                   <div>
                     <div className="text-sm text-neutral-600 mb-1">Time Remaining</div>
                     <div className="text-lg font-semibold">
                       <CountdownTimer endTime={vehicle.auctionEndTime} />
+                    </div>
+                    {/* Auction Status Badge */}
+                    <div className="mt-2">
+                      {(() => {
+                        if (isEnded) {
+                          return vehicle.isSold ? 
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                              Sold
+                            </span> :
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                              Ended
+                            </span>
+                        }
+                        
+                        if (vehicle.isPaused) {
+                          return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            Paused
+                          </span>
+                        }
+                        
+                        if (vehicle.reservePrice && vehicle.currentPrice >= vehicle.reservePrice) {
+                          return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Reserve Met
+                          </span>
+                        }
+                        
+                        if (vehicle.reservePrice) {
+                          return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            No Reserve
+                          </span>
+                        }
+                        
+                        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          No Reserve
+                        </span>
+                      })()}
                     </div>
                   </div>
                 </div>
@@ -163,6 +225,60 @@ export default function VehicleDetails() {
                   <div>
                     <h3 className="font-semibold text-neutral-900 mb-3">Description</h3>
                     <p className="text-body text-neutral-600 leading-relaxed">{vehicle.description}</p>
+                  </div>
+                )}
+
+                {/* Trust & Clarity Features */}
+                {(vehicle.vin || vehicle.serviceHistory || vehicle.ownershipCount || vehicle.conditionGrade || vehicle.highlightChips) && (
+                  <div>
+                    <h3 className="font-semibold text-neutral-900 mb-3">Vehicle Details</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {vehicle.vin && (
+                        <div className="bg-neutral-50 p-3 rounded-lg">
+                          <div className="text-sm font-medium text-neutral-700">VIN</div>
+                          <div className="text-sm text-neutral-600 font-mono">{vehicle.vin}</div>
+                        </div>
+                      )}
+                      
+                      {vehicle.ownershipCount && (
+                        <div className="bg-neutral-50 p-3 rounded-lg">
+                          <div className="text-sm font-medium text-neutral-700">Ownership Count</div>
+                          <div className="text-sm text-neutral-600">{vehicle.ownershipCount} owner{vehicle.ownershipCount !== 1 ? 's' : ''}</div>
+                        </div>
+                      )}
+                      
+                      {vehicle.conditionGrade && (
+                        <div className="bg-neutral-50 p-3 rounded-lg">
+                          <div className="text-sm font-medium text-neutral-700">Condition Grade</div>
+                          <div className="text-sm text-neutral-600">{vehicle.conditionGrade}</div>
+                        </div>
+                      )}
+                      
+                      {vehicle.serviceHistory && (
+                        <div className="bg-green-50 p-3 rounded-lg">
+                          <div className="flex items-center gap-2">
+                            <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                            <span className="text-sm font-medium text-green-800">Service History Available</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Highlight Chips */}
+                    {vehicle.highlightChips && (
+                      <div className="mt-4">
+                        <div className="text-sm font-medium text-neutral-700 mb-2">Highlights</div>
+                        <div className="flex flex-wrap gap-2">
+                          {JSON.parse(vehicle.highlightChips || '[]').map((highlight, index) => (
+                            <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
+                              {highlight}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -207,6 +323,38 @@ export default function VehicleDetails() {
                         )}
                       </button>
                     </form>
+                  </div>
+                )}
+
+                {/* Seller Profile Card */}
+                {vehicle.seller && (
+                  <div className="bg-gradient-to-r from-neutral-50 to-neutral-100 p-6 rounded-xl border border-neutral-200">
+                    <h3 className="font-semibold text-neutral-900 mb-4">Seller Information</h3>
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
+                        <span className="text-primary font-semibold text-lg">
+                          {vehicle.seller.username.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-semibold text-neutral-900">{vehicle.seller.username}</h4>
+                          {vehicle.seller.isVerified && (
+                            <span className="inline-flex items-center text-green-600" title="Verified Seller">
+                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-neutral-600 mt-1">
+                          {vehicle.seller.isVerified ? 'Verified Seller' : 'Seller'}
+                        </p>
+                      </div>
+                      <button className="btn-outline btn-sm">
+                        Contact
+                      </button>
+                    </div>
                   </div>
                 )}
 

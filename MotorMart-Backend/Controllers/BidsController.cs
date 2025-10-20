@@ -22,6 +22,14 @@ namespace MotorMart_Backend.Controllers
             var bids = await _db.Bids
                 .Where(b => b.VehicleId == vehicleId)
                 .OrderByDescending(b => b.TimePlaced)
+                .Select(b => new
+                {
+                    id = b.Id,
+                    amount = b.Amount,
+                    timePlaced = b.TimePlaced,
+                    userId = b.UserId,
+                    vehicleId = b.VehicleId
+                })
                 .ToListAsync();
             return Ok(bids);
         }
@@ -32,9 +40,13 @@ namespace MotorMart_Backend.Controllers
         {
             var vehicle = await _db.Vehicles.FirstOrDefaultAsync(v => v.Id == request.VehicleId);
             if (vehicle == null) return NotFound(new { message = "Vehicle not found" });
-            if (vehicle.IsClosed || DateTime.UtcNow >= vehicle.AuctionEndTime)
+            if (vehicle.IsClosed || vehicle.IsSold || DateTime.UtcNow >= vehicle.AuctionEndTime)
             {
                 return BadRequest(new { message = "Auction has ended" });
+            }
+            if (vehicle.IsPaused)
+            {
+                return BadRequest(new { message = "Auction is currently paused" });
             }
             if (request.Amount <= vehicle.CurrentPrice)
             {
@@ -56,7 +68,16 @@ namespace MotorMart_Backend.Controllers
             _db.Bids.Add(bid);
             vehicle.CurrentPrice = request.Amount;
             await _db.SaveChangesAsync();
-            return Ok(bid);
+            
+            // Return a clean response without navigation properties to avoid circular references
+            return Ok(new
+            {
+                id = bid.Id,
+                amount = bid.Amount,
+                timePlaced = bid.TimePlaced,
+                userId = bid.UserId,
+                vehicleId = bid.VehicleId
+            });
         }
     }
 

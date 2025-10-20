@@ -7,6 +7,7 @@ export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [touched, setTouched] = useState({ email: false, password: false })
   const [isLoading, setIsLoading] = useState(false)
   const { login } = useAuth()
   const navigate = useNavigate()
@@ -83,13 +84,17 @@ export default function Login() {
                 Email Address
               </label>
               <input 
-                className="input rounded-xl h-12" 
+                className={`input rounded-xl h-12 ${touched.email && !email ? 'border-red-300 focus:ring-red-200' : ''}`} 
                 type="email"
                 placeholder="Enter your email" 
                 value={email} 
                 onChange={e=>setEmail(e.target.value)}
+                onBlur={()=>setTouched(prev=>({...prev, email:true}))}
                 required
               />
+              {touched.email && !email && (
+                <p className="mt-1 text-sm text-red-600">Email is required</p>
+              )}
             </div>
             
             <div>
@@ -97,13 +102,17 @@ export default function Login() {
                 Password
               </label>
               <input 
-                className="input rounded-xl h-12" 
+                className={`input rounded-xl h-12 ${touched.password && !password ? 'border-red-300 focus:ring-red-200' : ''}`} 
                 type="password" 
                 placeholder="Enter your password" 
                 value={password} 
                 onChange={e=>setPassword(e.target.value)}
+                onBlur={()=>setTouched(prev=>({...prev, password:true}))}
                 required
               />
+              {touched.password && !password && (
+                <p className="mt-1 text-sm text-red-600">Password is required</p>
+              )}
             </div>
 
             <div className="flex items-center justify-between">

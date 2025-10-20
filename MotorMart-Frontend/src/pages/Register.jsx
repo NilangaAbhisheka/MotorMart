@@ -12,6 +12,7 @@ export default function Register() {
   })
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [touched, setTouched] = useState({ username:false, email:false, password:false, confirmPassword:false })
   const navigate = useNavigate()
   const LOGO_URL = "assets/logo.png"
 
@@ -132,12 +133,16 @@ export default function Register() {
                     Username
                   </label>
                   <input 
-                    className="input rounded-xl h-12" 
+                    className={`input rounded-xl h-12 ${touched.username && !formData.username ? 'border-red-300 focus:ring-red-200' : ''}`} 
                     placeholder="Choose a username" 
                     value={formData.username} 
                     onChange={e => handleChange('username', e.target.value)}
+                    onBlur={()=>setTouched(prev=>({...prev, username:true}))}
                     required
                   />
+                  {touched.username && !formData.username && (
+                    <p className="mt-1 text-sm text-red-600">Username is required</p>
+                  )}
                 </div>
 
                 <div>
@@ -145,13 +150,17 @@ export default function Register() {
                     Email Address
                   </label>
                   <input 
-                    className="input rounded-xl h-12" 
+                    className={`input rounded-xl h-12 ${touched.email && !formData.email ? 'border-red-300 focus:ring-red-200' : ''}`} 
                     type="email"
                     placeholder="Enter your email" 
                     value={formData.email} 
                     onChange={e => handleChange('email', e.target.value)}
+                    onBlur={()=>setTouched(prev=>({...prev, email:true}))}
                     required
                   />
+                  {touched.email && !formData.email && (
+                    <p className="mt-1 text-sm text-red-600">Email is required</p>
+                  )}
                 </div>
 
                 <div>
@@ -159,11 +168,12 @@ export default function Register() {
                     Password
                   </label>
                   <input 
-                    className="input rounded-xl h-12" 
+                    className={`input rounded-xl h-12 ${touched.password && formData.password.length < 6 ? 'border-red-300 focus:ring-red-200' : ''}`} 
                     type="password" 
                     placeholder="Create a password" 
                     value={formData.password} 
                     onChange={e => handleChange('password', e.target.value)}
+                    onBlur={()=>setTouched(prev=>({...prev, password:true}))}
                     required
                   />
                   {/* Password strength indicator */}
@@ -188,13 +198,17 @@ export default function Register() {
                     Confirm Password
                   </label>
                   <input 
-                    className="input rounded-xl h-12" 
+                    className={`input rounded-xl h-12 ${touched.confirmPassword && formData.confirmPassword !== formData.password ? 'border-red-300 focus:ring-red-200' : ''}`} 
                     type="password" 
                     placeholder="Confirm your password" 
                     value={formData.confirmPassword} 
                     onChange={e => handleChange('confirmPassword', e.target.value)}
+                    onBlur={()=>setTouched(prev=>({...prev, confirmPassword:true}))}
                     required
                   />
+                  {touched.confirmPassword && formData.confirmPassword !== formData.password && (
+                    <p className="mt-1 text-sm text-red-600">Passwords do not match</p>
+                  )}
                 </div>
 
                 <div>

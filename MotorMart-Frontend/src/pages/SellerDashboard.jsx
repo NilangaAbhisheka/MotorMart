@@ -1,16 +1,48 @@
 import { useEffect, useState } from 'react'
 import api from '../api/axios.js'
 import { Link } from 'react-router-dom'
+import EmptyState from '../components/EmptyState.jsx'
 import CountdownTimer from '../components/CountdownTimer.jsx'
+import { useToast } from '../components/Toast.jsx'
 
 export default function SellerDashboard() {
   const [items, setItems] = useState([])
+  const [loading, setLoading] = useState({})
+  const toast = useToast()
 
   useEffect(() => { load() }, [])
 
   async function load() {
     const res = await api.get('/api/vehicles')
     setItems(res.data)
+  }
+
+  async function pauseAuction(vehicleId) {
+    try {
+      setLoading(prev => ({ ...prev, [vehicleId]: true }))
+      await api.post(`/api/auction/pause/${vehicleId}`)
+      await load() // Reload to get updated data
+      toast.success('Auction paused successfully')
+    } catch (error) {
+      console.error('Error pausing auction:', error)
+      toast.error('Failed to pause auction')
+    } finally {
+      setLoading(prev => ({ ...prev, [vehicleId]: false }))
+    }
+  }
+
+  async function extendAuction(vehicleId) {
+    try {
+      setLoading(prev => ({ ...prev, [vehicleId]: true }))
+      await api.post(`/api/auction/extend/${vehicleId}`, { extendMinutes: 5 })
+      await load() // Reload to get updated data
+      toast.success('Auction extended by 5 minutes')
+    } catch (error) {
+      console.error('Error extending auction:', error)
+      toast.error('Failed to extend auction')
+    } finally {
+      setLoading(prev => ({ ...prev, [vehicleId]: false }))
+    }
   }
 
   const activeAuctions = items.filter(item => new Date(item.auctionEndTime) > new Date())
@@ -61,16 +93,12 @@ export default function SellerDashboard() {
         </div>
         
         {activeAuctions.length === 0 ? (
-          <div className="card p-8 text-center">
-            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-semibold text-slate-900 mb-2">No Active Auctions</h3>
-            <p className="text-slate-600 mb-4">You don't have any active auctions. Add a new vehicle to start selling!</p>
+          <EmptyState
+            title="No Active Auctions"
+            subtitle="You don't have any active auctions. Add a new vehicle to start selling!"
+          >
             <Link to="/add-vehicle" className="btn">Add Vehicle</Link>
-          </div>
+          </EmptyState>
         ) : (
           <div className="card overflow-hidden">
             <div className="overflow-x-auto">
@@ -81,7 +109,7 @@ export default function SellerDashboard() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Current Price</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Bids</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Time Remaining</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Actions</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Quick Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200">
@@ -113,12 +141,42 @@ export default function SellerDashboard() {
                         <CountdownTimer endTime={item.auctionEndTime} />
                       </td>
                       <td className="px-6 py-4">
-                        <Link 
-                          to={`/vehicle/${item.id}`} 
-                          className="text-primary hover:text-primary-dark font-medium"
-                        >
-                          View Details
-                        </Link>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => pauseAuction(item.id)}
+                            disabled={loading[item.id]}
+                            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                              item.isPaused 
+                                ? 'bg-green-100 text-green-700 hover:bg-green-200' 
+                                : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
+                            } disabled:opacity-50`}
+                          >
+                            {loading[item.id] ? (
+                              <svg className="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                              </svg>
+                            ) : item.isPaused ? (
+                              'Resume'
+                            ) : (
+                              'Pause'
+                            )}
+                          </button>
+                          
+                          <button
+                            onClick={() => extendAuction(item.id)}
+                            disabled={loading[item.id] || item.isPaused}
+                            className="px-3 py-1.5 text-xs font-medium rounded-md bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors disabled:opacity-50"
+                          >
+                            +5min
+                          </button>
+                          
+                          <Link 
+                            to={`/vehicle/${item.id}`} 
+                            className="px-3 py-1.5 text-xs font-medium rounded-md bg-primary-100 text-primary-700 hover:bg-primary-200 transition-colors"
+                          >
+                            View
+                          </Link>
+                        </div>
                       </td>
                     </tr>
                   ))}

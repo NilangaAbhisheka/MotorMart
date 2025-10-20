@@ -5,13 +5,13 @@ export default function Navbar() {
   const { isAuthenticated, user, logout } = useAuth()
   const LOGO_URL = "assets/logo.png"
 
-  const linkBase = 'px-4 py-2 rounded-lg transition-all duration-300 font-medium text-sm'
+  const linkBase = 'px-4 py-2 rounded-lg transition-all duration-300 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-white/40'
   const linkClass = ({ isActive }) =>
     `${linkBase} ${isActive ? 'bg-white/20 text-white shadow-md' : 'text-white/90 hover:text-white hover:bg-white/10'}`
   
   return (
-    <nav className="fixed top-0 inset-x-0 z-50 bg-gradient-primary shadow-medium">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="fixed top-0 inset-x-0 z-50 bg-gradient-primary shadow-medium" role="navigation" aria-label="Primary">
+      <div className="max-w-7xl mx-auto px-4 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-3 font-bold text-xl text-white hover:opacity-90 transition-opacity">
             {LOGO_URL ? (
@@ -36,6 +36,7 @@ export default function Navbar() {
             <NavLink to="/contact" className={linkClass}>Contact</NavLink>
             
             {isAuthenticated && <NavLink to="/my-bids" className={linkClass}>My Bids</NavLink>}
+            {isAuthenticated && <NavLink to="/my-watchlist" className={linkClass}>Watchlist</NavLink>}
             {isAuthenticated && (user?.role === 'Seller' || user?.role === 'Admin') && (
               <>
                 <NavLink to="/add-vehicle" className={linkClass}>Add Vehicle</NavLink>
@@ -48,13 +49,13 @@ export default function Navbar() {
                 <div className="flex items-center gap-2">
                   <NavLink
                     to="/login"
-                    className="px-4 py-2 rounded-lg border border-white/60 text-white text-sm font-semibold hover:bg-white/10 transition-colors"
+                    className="px-4 py-2 rounded-lg border border-white/60 text-white text-sm font-semibold hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-white/40"
                   >
                     Login
                   </NavLink>
                   <NavLink
                     to="/register"
-                    className="px-4 py-2 rounded-lg bg-white text-blue-600 text-sm font-semibold shadow-soft hover:bg-slate-100 transition-colors"
+                    className="px-4 py-2 rounded-lg bg-white text-blue-600 text-sm font-semibold shadow-soft hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-white/40"
                   >
                     Register
                   </NavLink>
@@ -66,7 +67,7 @@ export default function Navbar() {
                   </div>
                   <button 
                     onClick={logout} 
-                    className="btn-secondary btn-sm"
+                    className="btn-secondary btn-sm focus:outline-none focus:ring-2 focus:ring-white/40"
                   >
                     Logout
                   </button>

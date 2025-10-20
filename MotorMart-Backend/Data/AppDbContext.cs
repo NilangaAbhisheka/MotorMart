@@ -11,6 +11,8 @@ namespace MotorMart_Backend.Data
         public DbSet<Vehicle> Vehicles => Set<Vehicle>();
         public DbSet<Bid> Bids => Set<Bid>();
         public DbSet<Winner> Winners => Set<Winner>();
+        public DbSet<Watchlist> Watchlists => Set<Watchlist>();
+        public DbSet<VehicleImages> VehicleImages => Set<VehicleImages>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -40,6 +42,29 @@ namespace MotorMart_Backend.Data
                 .HasOne(w => w.Vehicle)
                 .WithOne(v => v.Winner)
                 .HasForeignKey<Winner>(w => w.VehicleId);
+
+            modelBuilder.Entity<Watchlist>()
+                .HasOne(w => w.User)
+                .WithMany(u => u.Watchlists)
+                .HasForeignKey(w => w.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Watchlist>()
+                .HasOne(w => w.Vehicle)
+                .WithMany(v => v.Watchlists)
+                .HasForeignKey(w => w.VehicleId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<VehicleImages>()
+                .HasOne(vi => vi.Vehicle)
+                .WithMany(v => v.Images)
+                .HasForeignKey(vi => vi.VehicleId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Ensure unique watchlist entries per user-vehicle pair
+            modelBuilder.Entity<Watchlist>()
+                .HasIndex(w => new { w.UserId, w.VehicleId })
+                .IsUnique();
         }
     }
 }

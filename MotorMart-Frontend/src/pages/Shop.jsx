@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react'
 import api from '../api/axios.js'
-import AuctionCard from '../components/AuctionCard.jsx'
+import VehicleCard from '../components/VehicleCard.jsx'
+import EmptyState from '../components/EmptyState.jsx'
 import FilterBar from '../components/FilterBar.jsx'
+import AdvancedFilters from '../components/AdvancedFilters.jsx'
 
 export default function Shop() {
   const [vehicles, setVehicles] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(24)
   const [query, setQuery] = useState({ 
@@ -18,54 +21,67 @@ export default function Shop() {
     bodyType: '',
     sortBy: 'newest'
   })
+  const [filters, setFilters] = useState({
+    make: '',
+    bodyType: '',
+    minPrice: '',
+    maxPrice: '',
+    minYear: '',
+    maxYear: '',
+    minMileage: '',
+    maxMileage: '',
+    sort: 'endingSoon'
+  })
 
   useEffect(() => { load() }, [])
 
   async function load() {
-    const res = await api.get('/api/vehicles')
-    setVehicles(res.data)
+    try {
+      setIsLoading(true)
+      const params = new URLSearchParams()
+      
+      // Add filters to query params
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value) {
+          params.append(key, value)
+        }
+      })
+      
+      const res = await api.get(`/api/vehicles?${params.toString()}`)
+      setVehicles(res.data)
+    } catch (error) {
+      console.error('Error loading vehicles:', error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  const filtered = vehicles.filter(v => {
-    const okMake = !query.make || v.make.toLowerCase().includes(query.make.toLowerCase())
-    const okModel = !query.model || v.model.toLowerCase().includes(query.model.toLowerCase())
-    const okYear = !query.year || String(v.year).includes(query.year)
-    const okMinYear = !query.minYear || v.year >= Number(query.minYear)
-    const okMaxYear = !query.maxYear || v.year <= Number(query.maxYear)
-    const okMinPrice = !query.minPrice || v.currentPrice >= Number(query.minPrice)
-    const okMaxPrice = !query.maxPrice || v.currentPrice <= Number(query.maxPrice)
-    const okBodyType = !query.bodyType || (v.bodyType && v.bodyType.toLowerCase() === query.bodyType.toLowerCase())
-    return okMake && okModel && okYear && okMinYear && okMaxYear && okMinPrice && okMaxPrice && okBodyType
-  })
+  function handleApplyFilters() {
+    setPage(1)
+    load()
+  }
 
-  // Sort vehicles based on selected option
-  const sortedVehicles = [...filtered].sort((a, b) => {
-    switch (query.sortBy) {
-      case 'newest':
-        return new Date(b.auctionEndTime) - new Date(a.auctionEndTime)
-      case 'oldest':
-        return new Date(a.auctionEndTime) - new Date(b.auctionEndTime)
-      case 'price-low':
-        return a.currentPrice - b.currentPrice
-      case 'price-high':
-        return b.currentPrice - a.currentPrice
-      case 'year-newest':
-        return b.year - a.year
-      case 'year-oldest':
-        return a.year - b.year
-      default:
-        return 0
-    }
-  })
+  function handleClearFilters() {
+    setFilters({
+      make: '',
+      bodyType: '',
+      minPrice: '',
+      maxPrice: '',
+      minYear: '',
+      maxYear: '',
+      minMileage: '',
+      maxMileage: '',
+      sort: 'endingSoon'
+    })
+    setPage(1)
+  }
 
-  // Cap the total rendered vehicles to 1000 for performance
-  const MAX_RENDER = 1000
-  const cappedVehicles = sortedVehicles.slice(0, MAX_RENDER)
-  const totalPages = Math.max(1, Math.ceil(cappedVehicles.length / pageSize))
+  // Pagination for server-side results
+  const totalPages = Math.max(1, Math.ceil(vehicles.length / pageSize))
   const currentPage = Math.min(page, totalPages)
   const startIndex = (currentPage - 1) * pageSize
   const endIndex = startIndex + pageSize
-  const paginatedVehicles = cappedVehicles.slice(startIndex, endIndex)
+  const paginatedVehicles = vehicles.slice(startIndex, endIndex)
 
   const clearFilters = () => {
     setQuery({ 
@@ -79,6 +95,7 @@ export default function Shop() {
       bodyType: '',
       sortBy: 'newest'
     })
+    handleClearFilters()
   }
 
   return (
@@ -105,111 +122,12 @@ export default function Shop() {
 
       {/* Enhanced Filter Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="card p-8 shadow-large border-gradient bg-white/95 backdrop-blur-sm">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-semibold text-xs mb-3">
-                <span>Search & Filter</span>
-              </div>
-              <h2 className="heading-3 mb-2">Find Your Perfect Vehicle</h2>
-              <div className="flex mb-2">
-                <span className="h-1 w-16 bg-gradient-primary rounded-full"></span>
-              </div>
-              <p className="text-body text-neutral-600">Use our advanced filters to find exactly what you're looking for</p>
-            </div>
-            <button 
-              onClick={clearFilters}
-              className="btn-outline btn-sm"
-            >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-              Clear All
-            </button>
-          </div>
-          
-          <div className="space-y-6">
-            {/* Basic Search Filters */}
-            <FilterBar query={query} onChange={setQuery} />
-            
-            {/* Advanced Filters */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-neutral-700 mb-2">Min Year</label>
-                <input 
-                  type="number" 
-                  className="input" 
-                  placeholder="2020" 
-                  value={query.minYear} 
-                  onChange={e => setQuery({...query, minYear: e.target.value})} 
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-neutral-700 mb-2">Max Year</label>
-                <input 
-                  type="number" 
-                  className="input" 
-                  placeholder="2024" 
-                  value={query.maxYear} 
-                  onChange={e => setQuery({...query, maxYear: e.target.value})} 
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-neutral-700 mb-2">Min Price</label>
-                <input 
-                  type="number" 
-                  className="input" 
-                  placeholder="$10,000" 
-                  value={query.minPrice} 
-                  onChange={e => setQuery({...query, minPrice: e.target.value})} 
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-neutral-700 mb-2">Max Price</label>
-                <input 
-                  type="number" 
-                  className="input" 
-                  placeholder="$100,000" 
-                  value={query.maxPrice} 
-                  onChange={e => setQuery({...query, maxPrice: e.target.value})} 
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-neutral-700 mb-2">Body Type</label>
-                <select 
-                  className="input" 
-                  value={query.bodyType} 
-                  onChange={e => setQuery({...query, bodyType: e.target.value})}
-                >
-                  <option value="">All Types</option>
-                  <option value="Sedan">Sedan</option>
-                  <option value="SUV">SUV</option>
-                  <option value="Sports">Sports</option>
-                  <option value="Convertible">Convertible</option>
-                  <option value="Compact">Compact</option>
-                  <option value="Pick Up">Pick Up</option>
-                  <option value="Crossover">Crossover</option>
-                  <option value="Electric">Electric</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-neutral-700 mb-2">Sort By</label>
-                <select 
-                  className="input" 
-                  value={query.sortBy} 
-                  onChange={e => setQuery({...query, sortBy: e.target.value})}
-                >
-                  <option value="newest">Newest Auctions</option>
-                  <option value="oldest">Ending Soon</option>
-                  <option value="price-low">Price: Low to High</option>
-                  <option value="price-high">Price: High to Low</option>
-                  <option value="year-newest">Year: Newest First</option>
-                  <option value="year-oldest">Year: Oldest First</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
+        <AdvancedFilters 
+          filters={filters}
+          onFiltersChange={setFilters}
+          onApplyFilters={handleApplyFilters}
+          onClearFilters={handleClearFilters}
+        />
       </section>
 
       {/* Results Section */}
@@ -224,12 +142,12 @@ export default function Shop() {
               <span className="h-1 w-16 bg-gradient-primary rounded-full"></span>
             </div>
             <p className="text-body text-neutral-600">
-              {sortedVehicles.length} vehicles available
+              {vehicles.length} vehicles available
             </p>
           </div>
           <div className="flex items-center gap-3">
             <div className="text-sm text-neutral-500 bg-blue-50 px-4 py-2 rounded-full border border-blue-100">
-              Showing {Math.min(endIndex, cappedVehicles.length)} of {Math.min(sortedVehicles.length, MAX_RENDER)} (max 1000)
+              Showing {Math.min(endIndex, vehicles.length)} of {vehicles.length}
             </div>
             <div className="flex items-center gap-2">
               <label className="text-sm text-neutral-600 font-medium">Per page</label>
@@ -247,31 +165,33 @@ export default function Shop() {
           </div>
         </div>
 
-        {sortedVehicles.length === 0 ? (
-          <div className="text-center py-20 bg-gradient-to-br from-blue-50 to-white rounded-3xl">
-            <div className="w-32 h-32 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-8 shadow-soft">
-              <svg className="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.29-1.009-5.824-2.709M15 6.75a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-            </div>
-            <h3 className="heading-3 mb-4">No Vehicles Found</h3>
-            <p className="text-body text-neutral-600 mb-8 max-w-md mx-auto">
-              Try adjusting your search filters to find more vehicles that match your criteria.
-            </p>
-            <button 
-              onClick={clearFilters}
-              className="btn-primary"
-            >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        {isLoading ? (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-primary animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
-              Clear Filters
-            </button>
+            </div>
+            <p className="text-neutral-600">Loading vehicles...</p>
           </div>
+        ) : vehicles.length === 0 ? (
+          <EmptyState
+            title="No Vehicles Found"
+            subtitle="Try adjusting your search filters to find more vehicles that match your criteria."
+            icon={
+              <div className="w-20 h-20 rounded-2xl bg-gradient-primary text-white flex items-center justify-center">
+                <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.29-1.009-5.824-2.709M15 6.75a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+            }
+          >
+            <button onClick={clearFilters} className="btn-primary">Clear Filters</button>
+          </EmptyState>
         ) : (
           <>
-            <div className="grid-responsive">
-              {paginatedVehicles.map(v => <AuctionCard key={v.id} vehicle={v} />)}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {paginatedVehicles.map(v => <VehicleCard key={v.id} vehicle={v} />)}
             </div>
             {/* Pagination Controls */}
             {totalPages > 1 && (

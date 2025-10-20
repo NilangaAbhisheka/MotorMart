@@ -4,13 +4,27 @@ import { useToast } from '../components/Toast.jsx'
 
 export default function AddVehicle() {
   const [form, setForm] = useState({
-    title: '', make: '', model: '', year: '', bodyType: '', description: '', startingPrice: '', auctionEndTime: ''
+    title: '', make: '', model: '', year: '', bodyType: '', description: '', startingPrice: '', auctionEndTime: '',
+    reservePrice: '', vin: '', serviceHistory: false, ownershipCount: '', conditionGrade: '', highlightChips: []
   })
   const [file, setFile] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const toast = useToast()
+  const [touched, setTouched] = useState({ title:false, make:false, model:false, year:false, startingPrice:false, auctionEndTime:false })
+  const [highlightOptions] = useState([
+    'New Tires', 'Accident-Free', 'Recently Serviced', 'First Owner', 'Garage Kept', 'Low Mileage', 'One Owner', 'No Accidents'
+  ])
 
   function update(field, value) { setForm(prev => ({ ...prev, [field]: value })) }
+
+  function toggleHighlightChip(chip) {
+    setForm(prev => ({
+      ...prev,
+      highlightChips: prev.highlightChips.includes(chip)
+        ? prev.highlightChips.filter(c => c !== chip)
+        : [...prev.highlightChips, chip]
+    }))
+  }
 
   function handleFileChange(e) {
     const selectedFile = e.target.files?.[0] || null
@@ -67,13 +81,16 @@ export default function AddVehicle() {
         ...form,
         year: Number(form.year),
         startingPrice: Number(form.startingPrice),
+        reservePrice: form.reservePrice ? Number(form.reservePrice) : null,
+        ownershipCount: form.ownershipCount ? Number(form.ownershipCount) : null,
+        highlightChips: JSON.stringify(form.highlightChips),
         imageUrl
       }
       
       console.log('Creating vehicle with payload:', payload)
       await api.post('/api/vehicles', payload)
       
-      setForm({ title: '', make: '', model: '', year: '', bodyType: '', description: '', startingPrice: '', auctionEndTime: '' })
+      setForm({ title: '', make: '', model: '', year: '', bodyType: '', description: '', startingPrice: '', auctionEndTime: '', reservePrice: '', vin: '', serviceHistory: false, ownershipCount: '', conditionGrade: '', highlightChips: [] })
       setFile(null)
       toast.success('Vehicle created successfully')
     } catch (err) {
@@ -86,8 +103,18 @@ export default function AddVehicle() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-accent-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-accent-50 py-12 px-4 lg:px-8">
       <div className="max-w-4xl mx-auto">
+        {/* Breadcrumbs */}
+        <div className="mb-6">
+          <div className="text-sm text-neutral-600" aria-label="Breadcrumb">
+            <a href="/" className="hover:text-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary-300 rounded">Home</a>
+            <span className="mx-2 text-neutral-400">/</span>
+            <a href="/seller" className="hover:text-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary-300 rounded">Dashboard</a>
+            <span className="mx-2 text-neutral-400">/</span>
+            <span className="font-medium text-neutral-800" aria-current="page">Add Vehicle</span>
+          </div>
+        </div>
         {/* Header */}
         <div className="text-center mb-12">
           <div className="mx-auto h-16 w-16 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-lg mb-6">
@@ -113,12 +140,14 @@ export default function AddVehicle() {
                     Vehicle Title *
                   </label>
                   <input 
-                    className="input" 
+                    className={`input ${touched.title && !form.title ? 'border-red-300 focus:ring-red-200' : ''}`} 
                     placeholder="e.g., 2020 BMW 3 Series" 
                     value={form.title} 
                     onChange={e=>update('title', e.target.value)} 
+                    onBlur={()=>setTouched(p=>({...p, title:true}))}
                     required 
                   />
+                  {touched.title && !form.title && (<p className="mt-1 text-sm text-red-600">Title is required</p>)}
                 </div>
                 
                 <div>
@@ -126,12 +155,14 @@ export default function AddVehicle() {
                     Make *
                   </label>
                   <input 
-                    className="input" 
+                    className={`input ${touched.make && !form.make ? 'border-red-300 focus:ring-red-200' : ''}`} 
                     placeholder="e.g., BMW" 
                     value={form.make} 
                     onChange={e=>update('make', e.target.value)} 
+                    onBlur={()=>setTouched(p=>({...p, make:true}))}
                     required 
                   />
+                  {touched.make && !form.make && (<p className="mt-1 text-sm text-red-600">Make is required</p>)}
                 </div>
                 
                 <div>
@@ -139,12 +170,14 @@ export default function AddVehicle() {
                     Model *
                   </label>
                   <input 
-                    className="input" 
+                    className={`input ${touched.model && !form.model ? 'border-red-300 focus:ring-red-200' : ''}`} 
                     placeholder="e.g., 3 Series" 
                     value={form.model} 
                     onChange={e=>update('model', e.target.value)} 
+                    onBlur={()=>setTouched(p=>({...p, model:true}))}
                     required 
                   />
+                  {touched.model && !form.model && (<p className="mt-1 text-sm text-red-600">Model is required</p>)}
                 </div>
                 
                 <div>
@@ -152,13 +185,15 @@ export default function AddVehicle() {
                     Year *
                   </label>
                   <input 
-                    className="input" 
+                    className={`input ${touched.year && !form.year ? 'border-red-300 focus:ring-red-200' : ''}`} 
                     type="number"
                     placeholder="e.g., 2020" 
                     value={form.year} 
                     onChange={e=>update('year', e.target.value)} 
+                    onBlur={()=>setTouched(p=>({...p, year:true}))}
                     required 
                   />
+                  {touched.year && !form.year && (<p className="mt-1 text-sm text-red-600">Year is required</p>)}
                 </div>
                 
                 <div>
@@ -189,14 +224,16 @@ export default function AddVehicle() {
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500">$</span>
                     <input 
-                      className="input pl-8" 
+                      className={`input pl-8 ${touched.startingPrice && !form.startingPrice ? 'border-red-300 focus:ring-red-200' : ''}`} 
                       type="number"
                       step="0.01"
                       placeholder="e.g., 25000" 
                       value={form.startingPrice} 
                       onChange={e=>update('startingPrice', e.target.value)} 
+                      onBlur={()=>setTouched(p=>({...p, startingPrice:true}))}
                       required 
                     />
+                    {touched.startingPrice && !form.startingPrice && (<p className="mt-1 text-sm text-red-600">Starting price is required</p>)}
                   </div>
                 </div>
               </div>
@@ -211,12 +248,14 @@ export default function AddVehicle() {
                     Auction End Time *
                   </label>
                   <input 
-                    className="input" 
+                    className={`input ${touched.auctionEndTime && !form.auctionEndTime ? 'border-red-300 focus:ring-red-200' : ''}`} 
                     type="datetime-local" 
                     value={form.auctionEndTime} 
                     onChange={e=>update('auctionEndTime', e.target.value)} 
+                    onBlur={()=>setTouched(p=>({...p, auctionEndTime:true}))}
                     required 
                   />
+                  {touched.auctionEndTime && !form.auctionEndTime && (<p className="mt-1 text-sm text-red-600">End time is required</p>)}
                   <p className="text-xs text-neutral-500 mt-1">
                     Set when you want the auction to end
                   </p>
@@ -232,6 +271,110 @@ export default function AddVehicle() {
                     value={form.description} 
                     onChange={e=>update('description', e.target.value)} 
                   />
+                </div>
+              </div>
+            </div>
+
+            {/* Reserve Price & Trust Features */}
+            <div>
+              <h2 className="heading-4 mb-6 text-neutral-900">Reserve Price & Trust Features</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-semibold text-neutral-700 mb-2">
+                    Reserve Price (Optional)
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500">$</span>
+                    <input 
+                      className="input pl-8" 
+                      type="number"
+                      step="0.01"
+                      placeholder="e.g., 30000" 
+                      value={form.reservePrice} 
+                      onChange={e=>update('reservePrice', e.target.value)} 
+                    />
+                  </div>
+                  <p className="text-xs text-neutral-500 mt-1">
+                    Minimum price you're willing to accept
+                  </p>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-semibold text-neutral-700 mb-2">
+                    VIN (Optional)
+                  </label>
+                  <input 
+                    className="input" 
+                    placeholder="e.g., 1HGBH41JXMN109186" 
+                    value={form.vin} 
+                    onChange={e=>update('vin', e.target.value)} 
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-semibold text-neutral-700 mb-2">
+                    Ownership Count
+                  </label>
+                  <input 
+                    className="input" 
+                    type="number"
+                    placeholder="e.g., 1" 
+                    value={form.ownershipCount} 
+                    onChange={e=>update('ownershipCount', e.target.value)} 
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-semibold text-neutral-700 mb-2">
+                    Condition Grade
+                  </label>
+                  <select 
+                    className="input" 
+                    value={form.conditionGrade} 
+                    onChange={e=>update('conditionGrade', e.target.value)}
+                  >
+                    <option value="">Select Condition</option>
+                    <option value="Excellent">Excellent</option>
+                    <option value="Very Good">Very Good</option>
+                    <option value="Good">Good</option>
+                    <option value="Fair">Fair</option>
+                    <option value="Poor">Poor</option>
+                  </select>
+                </div>
+              </div>
+              
+              {/* Service History Checkbox */}
+              <div className="mt-6">
+                <label className="flex items-center gap-3">
+                  <input 
+                    type="checkbox" 
+                    className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500" 
+                    checked={form.serviceHistory} 
+                    onChange={e=>update('serviceHistory', e.target.checked)} 
+                  />
+                  <span className="text-sm font-semibold text-neutral-700">
+                    Service History Available
+                  </span>
+                </label>
+              </div>
+              
+              {/* Highlight Chips */}
+              <div className="mt-6">
+                <label className="block text-sm font-semibold text-neutral-700 mb-3">
+                  Vehicle Highlights (Select all that apply)
+                </label>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  {highlightOptions.map((option) => (
+                    <label key={option} className="flex items-center gap-2 cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500" 
+                        checked={form.highlightChips.includes(option)} 
+                        onChange={() => toggleHighlightChip(option)} 
+                      />
+                      <span className="text-sm text-neutral-700">{option}</span>
+                    </label>
+                  ))}
                 </div>
               </div>
             </div>

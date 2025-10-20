@@ -12,12 +12,12 @@ export default function AuctionCard({ vehicle, highlight = false }) {
   const placeholderImage = `https://images.unsplash.com/photo-${Math.floor(Math.random() * 1000000)}?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300&q=80`
   
   return (
-    <Link to={`/vehicle/${vehicle.id}`} className="block card card-hover overflow-hidden group relative animate-scale-in">
-      <div className="relative">
-        <img 
-          src={vehicle.imageUrl || placeholderImage} 
-          alt={vehicle.title} 
-          className={`w-full h-56 object-cover transition-all duration-300 ${isEnded ? 'grayscale' : 'group-hover:scale-105'}`} 
+    <Link to={`/vehicle/${vehicle.id}`} className="block card card-hover overflow-hidden group relative animate-scale-in ring-1 ring-gray-200 rounded-lg">
+      <div className="relative aspect-video overflow-hidden">
+        <img
+          src={vehicle.imageUrl || placeholderImage}
+          alt={vehicle.title}
+          className={`w-full h-full object-cover transition-transform duration-300 ${isEnded ? 'grayscale' : 'group-hover:scale-105'}`}
           onError={(e) => {
             e.target.src = placeholderImage
           }}
@@ -43,7 +43,7 @@ export default function AuctionCard({ vehicle, highlight = false }) {
         </div>
       </div>
       
-      <div className="p-6 space-y-4">
+      <div className="p-4 space-y-4">
         <div className="space-y-2">
           <h3 className="font-bold text-lg text-neutral-900 group-hover:text-primary transition-colors line-clamp-2">
             {vehicle.title}
@@ -76,7 +76,7 @@ export default function AuctionCard({ vehicle, highlight = false }) {
             View Details
           </div>
         ) : (
-          <button className="btn-primary w-full group-hover:translate-y-[-2px] transition-all duration-300">
+          <button className="btn-primary w-full group-hover:translate-y-[-2px] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-400">
             Place Bid
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />

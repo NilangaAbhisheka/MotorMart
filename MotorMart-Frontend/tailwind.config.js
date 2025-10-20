@@ -5,6 +5,13 @@ export default {
     './src/**/*.{js,jsx,ts,tsx}',
   ],
   theme: {
+    container: {
+      center: true,
+      padding: {
+        DEFAULT: '1rem',
+        lg: '2rem',
+      },
+    },
     extend: {
       colors: {
         primary: {
@@ -78,10 +85,20 @@ export default {
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'],
       },
+      fontSize: {
+        display: ['3rem', { lineHeight: '1.2', fontWeight: '800', letterSpacing: '-0.025em' }],
+        headline: ['2.25rem', { lineHeight: '1.3', fontWeight: '700', letterSpacing: '-0.025em' }],
+        body: ['1rem', { lineHeight: '1.6', fontWeight: '400' }],
+      },
+      spacing: {
+        18: '4.5rem',
+        22: '5.5rem',
+      },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',
         'slide-up': 'slideUp 0.3s ease-out',
         'scale-in': 'scaleIn 0.2s ease-out',
+        'pulse-slow': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
       keyframes: {
         fadeIn: {

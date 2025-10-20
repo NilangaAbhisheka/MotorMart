@@ -6,6 +6,7 @@ import Login from './Login.jsx'
 import Register from './Register.jsx'
 import AddVehicle from './AddVehicle.jsx'
 import MyBids from './MyBids.jsx'
+import MyWatchlist from './MyWatchlist.jsx'
 import SellerDashboard from './SellerDashboard.jsx'
 import Shop from './Shop.jsx'
 import About from './About.jsx'
@@ -28,6 +29,7 @@ export default function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/add-vehicle" element={<ProtectedRoute><AddVehicle /></ProtectedRoute>} />
           <Route path="/my-bids" element={<ProtectedRoute><MyBids /></ProtectedRoute>} />
+          <Route path="/my-watchlist" element={<ProtectedRoute><MyWatchlist /></ProtectedRoute>} />
           <Route path="/seller" element={<ProtectedRoute roles={["Seller","Admin"]}><SellerDashboard /></ProtectedRoute>} />
         </Routes>
       </main>

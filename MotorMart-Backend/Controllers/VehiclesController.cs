@@ -18,24 +18,68 @@ namespace MotorMart_Backend.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetActive()
+        public async Task<IActionResult> GetActive([FromQuery] string? make = null, [FromQuery] string? bodyType = null, 
+            [FromQuery] decimal? minPrice = null, [FromQuery] decimal? maxPrice = null, 
+            [FromQuery] int? minYear = null, [FromQuery] int? maxYear = null,
+            [FromQuery] int? minMileage = null, [FromQuery] int? maxMileage = null,
+            [FromQuery] string? sort = "endingSoon")
         {
             var now = DateTime.UtcNow;
-            var vehicles = await _db.Vehicles
-                .Where(v => !v.IsClosed && v.AuctionEndTime > now)
-                .OrderBy(v => v.AuctionEndTime)
-                .Select(v => new
+            var query = _db.Vehicles
+                .Where(v => !v.IsClosed && v.AuctionEndTime > now && !v.IsPaused)
+                .Include(v => v.Seller)
+                .AsQueryable();
+
+            // Apply filters
+            if (!string.IsNullOrEmpty(make))
+                query = query.Where(v => v.Make.ToLower().Contains(make.ToLower()));
+
+            if (!string.IsNullOrEmpty(bodyType))
+                query = query.Where(v => v.BodyType == bodyType);
+
+            if (minPrice.HasValue)
+                query = query.Where(v => v.CurrentPrice >= minPrice.Value);
+
+            if (maxPrice.HasValue)
+                query = query.Where(v => v.CurrentPrice <= maxPrice.Value);
+
+            if (minYear.HasValue)
+                query = query.Where(v => v.Year >= minYear.Value);
+
+            if (maxYear.HasValue)
+                query = query.Where(v => v.Year <= maxYear.Value);
+
+            // Apply sorting
+            query = sort switch
+            {
+                "endingSoon" => query.OrderBy(v => v.AuctionEndTime),
+                "newlyListed" => query.OrderByDescending(v => v.Id),
+                "priceLow" => query.OrderBy(v => v.CurrentPrice),
+                "priceHigh" => query.OrderByDescending(v => v.CurrentPrice),
+                _ => query.OrderBy(v => v.AuctionEndTime)
+            };
+
+            var vehicles = await query.Select(v => new
+            {
+                v.Id,
+                v.Title,
+                v.Make,
+                v.Model,
+                v.Year,
+                v.BodyType,
+                v.CurrentPrice,
+                v.ReservePrice,
+                v.ImageUrl,
+                v.AuctionEndTime,
+                v.IsSold,
+                v.IsPaused,
+                Seller = new
                 {
-                    v.Id,
-                    v.Title,
-                    v.Make,
-                    v.Model,
-                    v.Year,
-                    v.BodyType,
-                    v.CurrentPrice,
-                    v.ImageUrl,
-                    v.AuctionEndTime
-                }).ToListAsync();
+                    v.Seller!.Username,
+                    v.Seller.IsVerified
+                }
+            }).ToListAsync();
+
             return Ok(vehicles);
         }
 
@@ -45,6 +89,8 @@ namespace MotorMart_Backend.Controllers
             // Project to a DTO to avoid circular reference serialization issues
             var vehicle = await _db.Vehicles
                 .Where(v => v.Id == id)
+                .Include(v => v.Seller)
+                .Include(v => v.Images)
                 .Select(v => new
                 {
                     v.Id,
@@ -56,9 +102,29 @@ namespace MotorMart_Backend.Controllers
                     v.Description,
                     v.StartingPrice,
                     v.CurrentPrice,
+                    v.ReservePrice,
                     v.ImageUrl,
                     v.AuctionEndTime,
-                    v.IsClosed
+                    v.IsClosed,
+                    v.IsSold,
+                    v.IsPaused,
+                    v.Vin,
+                    v.ServiceHistory,
+                    v.OwnershipCount,
+                    v.ConditionGrade,
+                    v.HighlightChips,
+                    Seller = new
+                    {
+                        v.Seller!.Id,
+                        v.Seller.Username,
+                        v.Seller.IsVerified
+                    },
+                    Images = v.Images.OrderBy(i => i.DisplayOrder).Select(i => new
+                    {
+                        i.Id,
+                        i.ImageUrl,
+                        i.DisplayOrder
+                    })
                 })
                 .FirstOrDefaultAsync();
 
@@ -84,14 +150,47 @@ namespace MotorMart_Backend.Controllers
                 Description = request.Description,
                 StartingPrice = request.StartingPrice,
                 CurrentPrice = request.StartingPrice,
+                ReservePrice = request.ReservePrice,
                 ImageUrl = request.ImageUrl,
                 AuctionEndTime = request.AuctionEndTime,
                 SellerId = sellerId,
-                IsClosed = false
+                IsClosed = false,
+                IsSold = false,
+                IsPaused = false,
+                Vin = request.Vin,
+                ServiceHistory = request.ServiceHistory,
+                OwnershipCount = request.OwnershipCount,
+                ConditionGrade = request.ConditionGrade,
+                HighlightChips = request.HighlightChips
             };
             _db.Vehicles.Add(vehicle);
             await _db.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetById), new { id = vehicle.Id }, vehicle);
+            
+            // Return a clean response without navigation properties to avoid circular references
+            return CreatedAtAction(nameof(GetById), new { id = vehicle.Id }, new
+            {
+                id = vehicle.Id,
+                title = vehicle.Title,
+                make = vehicle.Make,
+                model = vehicle.Model,
+                year = vehicle.Year,
+                bodyType = vehicle.BodyType,
+                description = vehicle.Description,
+                startingPrice = vehicle.StartingPrice,
+                currentPrice = vehicle.CurrentPrice,
+                reservePrice = vehicle.ReservePrice,
+                imageUrl = vehicle.ImageUrl,
+                auctionEndTime = vehicle.AuctionEndTime,
+                isClosed = vehicle.IsClosed,
+                isSold = vehicle.IsSold,
+                isPaused = vehicle.IsPaused,
+                vin = vehicle.Vin,
+                serviceHistory = vehicle.ServiceHistory,
+                ownershipCount = vehicle.OwnershipCount,
+                conditionGrade = vehicle.ConditionGrade,
+                highlightChips = vehicle.HighlightChips,
+                sellerId = vehicle.SellerId
+            });
         }
 
         [HttpPut("{id}")]
@@ -107,7 +206,32 @@ namespace MotorMart_Backend.Controllers
             if (request.AuctionEndTime.HasValue) vehicle.AuctionEndTime = request.AuctionEndTime.Value;
 
             await _db.SaveChangesAsync();
-            return Ok(vehicle);
+            
+            // Return a clean response without navigation properties to avoid circular references
+            return Ok(new
+            {
+                id = vehicle.Id,
+                title = vehicle.Title,
+                make = vehicle.Make,
+                model = vehicle.Model,
+                year = vehicle.Year,
+                bodyType = vehicle.BodyType,
+                description = vehicle.Description,
+                startingPrice = vehicle.StartingPrice,
+                currentPrice = vehicle.CurrentPrice,
+                reservePrice = vehicle.ReservePrice,
+                imageUrl = vehicle.ImageUrl,
+                auctionEndTime = vehicle.AuctionEndTime,
+                isClosed = vehicle.IsClosed,
+                isSold = vehicle.IsSold,
+                isPaused = vehicle.IsPaused,
+                vin = vehicle.Vin,
+                serviceHistory = vehicle.ServiceHistory,
+                ownershipCount = vehicle.OwnershipCount,
+                conditionGrade = vehicle.ConditionGrade,
+                highlightChips = vehicle.HighlightChips,
+                sellerId = vehicle.SellerId
+            });
         }
 
         [HttpDelete("{id}")]
@@ -131,8 +255,16 @@ namespace MotorMart_Backend.Controllers
         public string BodyType { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public decimal StartingPrice { get; set; }
+        public decimal? ReservePrice { get; set; }
         public string ImageUrl { get; set; } = string.Empty;
         public DateTime AuctionEndTime { get; set; }
+        
+        // Trust & Clarity Features
+        public string? Vin { get; set; }
+        public bool ServiceHistory { get; set; }
+        public int? OwnershipCount { get; set; }
+        public string? ConditionGrade { get; set; }
+        public string? HighlightChips { get; set; }
     }
 
     public class UpdateVehicleRequest
