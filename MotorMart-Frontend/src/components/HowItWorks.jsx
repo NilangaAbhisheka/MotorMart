@@ -5,7 +5,7 @@ export default function HowItWorks() {
     { title: 'Place Bids and Monitor', text: 'Bid confidently and track auctions in real time.' },
   ]
   return (
-    <section className="py-10">
+    <section className="py-10 -mt-50">
       <div className="max-w-6xl mx-auto px-4">
         <div className="grid grid-cols-3 gap-4">
           {steps.map((s, i) => (

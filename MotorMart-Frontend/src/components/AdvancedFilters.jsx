@@ -204,3 +204,4 @@ export default function AdvancedFilters({ filters, onFiltersChange, onApplyFilte
     </div>
   )
 }
+

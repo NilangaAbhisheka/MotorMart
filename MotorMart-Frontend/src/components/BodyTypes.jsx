@@ -3,7 +3,7 @@ export default function BodyTypes({ onBodyTypeSelect, selectedBodyType }) {
     'Sedan','SUV','Sports','Convertible','Compact','Pick Up','Crossover','Electric'
   ]
   return (
-    <section className="py-10">
+    <section className="py-10 -mt-30">
       <div className="max-w-6xl mx-auto px-4">
         <div className="text-center mb-6">
           <div className="text-sm uppercase tracking-wide text-muted">Find your style</div>

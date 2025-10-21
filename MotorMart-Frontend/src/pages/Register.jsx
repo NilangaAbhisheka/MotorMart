@@ -14,7 +14,7 @@ export default function Register() {
   const [isLoading, setIsLoading] = useState(false)
   const [touched, setTouched] = useState({ username:false, email:false, password:false, confirmPassword:false })
   const navigate = useNavigate()
-  const LOGO_URL = "assets/logo.png"
+  const LOGO_URL = "assets/register.png"
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -73,9 +73,9 @@ export default function Register() {
           <div className="relative hidden lg:flex flex-col justify-between rounded-3xl bg-white/5 border border-white/10 backdrop-blur-sm shadow-large p-10 min-h-[560px] text-white">
             <div>
               <div className="flex items-center gap-3">
-                <div className="h-50 w-60 -mb-10 ">
+                <div className="h-80 w-90 -mb-20 ">
                   {LOGO_URL ? (
-                    <img src={LOGO_URL} alt="MotorMart logo" className="h-50 w-60 " referrerPolicy="no-referrer" />
+                    <img src={LOGO_URL} alt="MotorMart logo" className="h-80 w-90 " referrerPolicy="no-referrer" />
                   ) : (
                     <span className="text-white font-bold text-xl">M</span>
                   )}

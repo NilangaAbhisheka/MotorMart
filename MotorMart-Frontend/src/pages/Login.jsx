@@ -11,7 +11,7 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false)
   const { login } = useAuth()
   const navigate = useNavigate()
-  const LOGO_URL = "assets/logo.png"
+  const LOGO_URL = "assets/login.png"
 
   async function onSubmit(e) {
     e.preventDefault()
@@ -30,7 +30,7 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-primary">
+    <div className="h-180 bg-gradient-primary">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           {/* Left marketing panel */}

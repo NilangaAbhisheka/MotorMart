@@ -18,7 +18,7 @@ export default function Navbar() {
               <img
                 src={LOGO_URL}
                 alt="MotorMart logo"
-                className="h-30 w-30 "
+                className="h-40 w-40 "
                 referrerPolicy="no-referrer"
               />
             ) : (

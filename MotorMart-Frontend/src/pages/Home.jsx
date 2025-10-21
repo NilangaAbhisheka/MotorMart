@@ -37,21 +37,21 @@ export default function Home() {
   return (
     <div className="space-y-16">
       {/* Hero Section */}
-      <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-gradient-primary">
+      <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden ">
         {/* Decorative white shapes */}
         <div className="pointer-events-none select-none">
           <div className="absolute -top-10 -left-10 h-40 w-40 bg-white/10 rounded-full blur-2xl"></div>
           <div className="absolute -bottom-8 -right-8 h-32 w-32 bg-white/10 rounded-full blur-xl"></div>
           <div className="absolute top-10 right-10 h-24 w-24 bg-white/15 rounded-3xl rotate-12"></div>
         </div>
-        
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="animate-fade-in">
-            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+        <img src="assets/1.jpg" alt="Hero" className="absolute inset-0 w-full h-full object-cover z-0  opacity-95" />
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center absolute inset-0 w-full h-full object-cover" style={{ zIndex: 1 }} >
+          <div className="animate-fade-in mt-20 ">
+            <h1 className="text-5xl md:text-7xl font-bold text-gray mb-6 leading-tight ">
               Find Your Dream
-              <span className="block text-white/90">Vehicle</span>
+              <span className="block text-black/90">Vehicle</span>
             </h1>
-            <p className="text-xl md:text-2xl text-white/80 mb-8 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl md:text-2xl text-white/90 font-bold mb-8 max-w-3xl mx-auto leading-relaxed " style={{ textShadow: '1px 1px 2px rgba(19, 40, 224, 0.5)'  }} >
               Discover premium vehicles through our transparent, secure auction platform. 
               From luxury cars to everyday vehicles, find exactly what you're looking for.
             </p>

@@ -105,7 +105,7 @@ export default function Shop() {
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="absolute top-10 right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
         <div className="absolute bottom-10 left-10 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
-        
+        <img src="assets/4.jpg" alt="Hero" className="absolute inset-0 w-full h-full object-cover z-0  opacity-85" />
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 text-white font-semibold text-sm mb-6">
             <span>Vehicle Shop</span>

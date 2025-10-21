@@ -14,3 +14,4 @@ namespace MotorMart_Backend.Models
         public Vehicle? Vehicle { get; set; }
     }
 }
+

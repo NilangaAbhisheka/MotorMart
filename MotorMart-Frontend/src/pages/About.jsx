@@ -47,7 +47,7 @@ export default function About() {
             <div className="relative">
               <div className="absolute -inset-4 bg-gradient-primary rounded-2xl blur opacity-20"></div>
               <img 
-                src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80" 
+                src="assets/5.png" 
                 alt="Our Mission" 
                 className="relative w-full h-96 object-cover rounded-2xl shadow-large"
                 onError={(e) => {

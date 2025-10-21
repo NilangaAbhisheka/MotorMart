@@ -6,9 +6,9 @@ export default function AboutUs() {
           {/* Car Image */}
           <div className="relative">
             <img 
-              src="/src/assets/1.jpg" 
+              src="assets/2.jpg" 
               alt="Mercedes-Benz AMG" 
-              className="w-full h-96 object-cover rounded-lg shadow-lg"
+              className="w-full h-96 object-cover rounded-lg "
             />
           </div>
           

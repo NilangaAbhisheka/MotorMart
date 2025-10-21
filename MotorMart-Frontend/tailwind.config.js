@@ -15,20 +15,6 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#2563EB', // Professional blue
-          50: '#EFF6FF',
-          100: '#DBEAFE',
-          200: '#BFDBFE',
-          300: '#93C5FD',
-          400: '#60A5FA',
-          500: '#3B82F6',
-          600: '#2563EB',
-          700: '#1D4ED8',
-          800: '#1E40AF',
-          900: '#1E3A8A',
-          foreground: '#FFFFFF',
-        },
-        secondary: {
           DEFAULT: '#DC2626', // Professional red
           50: '#FEF2F2',
           100: '#FEE2E2',
@@ -41,7 +27,21 @@ export default {
           800: '#991B1B',
           900: '#7F1D1D',
           foreground: '#FFFFFF',
-        },
+       
+          },
+        secondary: {DEFAULT: '#2563EB', // Professional blue
+          50: '#EFF6FF',
+          100: '#DBEAFE',
+          200: '#BFDBFE',
+          300: '#93C5FD',
+          400: '#60A5FA',
+          500: '#3B82F6',
+          600: '#2563EB',
+          700: '#1D4ED8',
+          800: '#1E40AF',
+          900: '#1E3A8A',
+          foreground: '#FFFFFF',
+         },
         accent: {
           DEFAULT: '#F59E0B', // Professional amber
           50: '#FFFBEB',

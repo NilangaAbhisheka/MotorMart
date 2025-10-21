@@ -11,7 +11,7 @@ export default function NewsletterCTA() {
                 <button className="px-4 py-2 rounded-md bg-slate-900 text-white">Submit</button>
               </div>
             </div>
-            <img src="assets/1.jpg" alt="Car" className="w-full h-48 object-cover rounded-lg shadow" />
+            <img src="assets/3.png" alt="Car" className="w-full h-48 object-cover rounded-lg shadow" />
           </div>
         </div>
       </div>
