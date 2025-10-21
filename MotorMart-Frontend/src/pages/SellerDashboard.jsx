@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import api from '../api/axios.js'
+import api, { getImageUrl } from '../api/axios.js'
 import { Link } from 'react-router-dom'
 import EmptyState from '../components/EmptyState.jsx'
 import CountdownTimer from '../components/CountdownTimer.jsx'
@@ -134,7 +134,7 @@ export default function SellerDashboard() {
                       <td className="px-6 py-4">
                         <div className="flex items-center">
                           <img 
-                            src={item.imageUrl || `https://images.unsplash.com/photo-${Math.floor(Math.random() * 1000000)}?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100&q=80`} 
+                            src={getImageUrl(item.imageUrl) || `https://images.unsplash.com/photo-${Math.floor(Math.random() * 1000000)}?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100&q=80`} 
                             alt={item.title} 
                             className="w-12 h-12 rounded-lg object-cover mr-4"
                             onError={(e) => {
@@ -228,7 +228,7 @@ export default function SellerDashboard() {
                       <td className="px-6 py-4">
                         <div className="flex items-center">
                           <img 
-                            src={item.imageUrl || `https://images.unsplash.com/photo-${Math.floor(Math.random() * 1000000)}?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100&q=80`} 
+                            src={getImageUrl(item.imageUrl) || `https://images.unsplash.com/photo-${Math.floor(Math.random() * 1000000)}?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100&q=80`} 
                             alt={item.title} 
                             className="w-12 h-12 rounded-lg object-cover mr-4 grayscale"
                             onError={(e) => {

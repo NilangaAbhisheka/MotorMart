@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import api from '../api/axios.js'
+import api, { getImageUrl } from '../api/axios.js'
 import { useAuth } from '../state/AuthContext.jsx'
 
 export default function VehicleCard({ vehicle }) {
@@ -77,7 +77,7 @@ export default function VehicleCard({ vehicle }) {
     <Link to={`/vehicle/${vehicle.id}`} className="block card card-hover overflow-hidden group relative animate-scale-in ring-1 ring-gray-200 rounded-lg">
       <div className="relative aspect-video overflow-hidden">
         <img
-          src={vehicle.imageUrl || placeholderImage}
+          src={getImageUrl(vehicle.imageUrl) || placeholderImage}
           alt={vehicle.title}
           className={`w-full h-full object-cover transition-transform duration-300 ${isEnded ? 'grayscale' : 'group-hover:scale-105'}`}
           onError={(e) => { e.target.src = placeholderImage }}

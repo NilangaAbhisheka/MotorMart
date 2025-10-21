@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import CountdownTimer from './CountdownTimer.jsx'
 import useCountdown from '../hooks/useCountdown.jsx'
 import { useAuth } from '../state/AuthContext.jsx'
+import { getImageUrl } from '../api/axios.js'
 
 export default function AuctionCard({ vehicle, highlight = false }) {
   const { isEnded } = useCountdown(vehicle.auctionEndTime)
@@ -15,7 +16,7 @@ export default function AuctionCard({ vehicle, highlight = false }) {
     <Link to={`/vehicle/${vehicle.id}`} className="block card card-hover overflow-hidden group relative animate-scale-in ring-1 ring-gray-200 rounded-lg">
       <div className="relative aspect-video overflow-hidden">
         <img
-          src={vehicle.imageUrl || placeholderImage}
+          src={getImageUrl(vehicle.imageUrl) || placeholderImage}
           alt={vehicle.title}
           className={`w-full h-full object-cover transition-transform duration-300 ${isEnded ? 'grayscale' : 'group-hover:scale-105'}`}
           onError={(e) => {

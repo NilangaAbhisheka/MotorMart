@@ -31,6 +31,9 @@ namespace MotorMart_Backend.Models
         public int SellerId { get; set; }
         public User? Seller { get; set; }
 
+        public int? SoldToUserId { get; set; } // Winner/buyer who won the auction
+        public User? SoldToUser { get; set; }
+
         public ICollection<Bid> Bids { get; set; } = new List<Bid>();
         public ICollection<VehicleImages> Images { get; set; } = new List<VehicleImages>();
         public ICollection<Watchlist> Watchlists { get; set; } = new List<Watchlist>();

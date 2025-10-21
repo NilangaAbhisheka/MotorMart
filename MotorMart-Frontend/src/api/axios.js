@@ -13,6 +13,17 @@ api.interceptors.request.use(config => {
   return config
 })
 
+// Helper function to get full image URL
+export function getImageUrl(path) {
+  if (!path) return null
+  // If path already starts with http, return as is
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path
+  }
+  // Otherwise prepend the base URL
+  return `${baseURL}${path.startsWith('/') ? '' : '/'}${path}`
+}
+
 export default api
 
 

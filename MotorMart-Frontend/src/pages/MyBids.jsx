@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import api from '../api/axios.js'
+import api, { getImageUrl } from '../api/axios.js'
 import { Link } from 'react-router-dom'
 import EmptyState from '../components/EmptyState.jsx'
 import CountdownTimer from '../components/CountdownTimer.jsx'
@@ -47,7 +47,7 @@ export default function MyBids() {
             <Link key={idx} to={`/vehicle/${x.vehicle.id}`} className="card card-hover group">
               <div className="relative">
                 <img 
-                  src={x.vehicle.imageUrl || `https://images.unsplash.com/photo-${Math.floor(Math.random() * 1000000)}?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300&q=80`} 
+                  src={getImageUrl(x.vehicle.imageUrl) || `https://images.unsplash.com/photo-${Math.floor(Math.random() * 1000000)}?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300&q=80`} 
                   alt={x.vehicle.title} 
                   className="w-full h-48 object-cover rounded-t-lg"
                   onError={(e) => {

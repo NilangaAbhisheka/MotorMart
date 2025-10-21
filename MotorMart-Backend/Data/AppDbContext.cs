@@ -28,6 +28,12 @@ namespace MotorMart_Backend.Data
                 .HasForeignKey(v => v.SellerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Vehicle>()
+                .HasOne(v => v.SoldToUser)
+                .WithMany()
+                .HasForeignKey(v => v.SoldToUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<Bid>()
                 .HasOne(b => b.Vehicle)
                 .WithMany(v => v.Bids)

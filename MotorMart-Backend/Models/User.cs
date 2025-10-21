@@ -10,6 +10,8 @@ namespace MotorMart_Backend.Models
         public string PasswordHash { get; set; } = string.Empty;
         public string Role { get; set; } = "Buyer"; // Buyer | Seller | Admin
         public bool IsVerified { get; set; } = true; // Default to true for existing users
+        public bool IsActive { get; set; } = true; // For admin to ban/unban users
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public ICollection<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
         public ICollection<Bid> Bids { get; set; } = new List<Bid>();

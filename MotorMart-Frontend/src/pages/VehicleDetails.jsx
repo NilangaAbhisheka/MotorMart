@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import api from '../api/axios.js'
+import api, { getImageUrl } from '../api/axios.js'
 import { useAuth } from '../state/AuthContext.jsx'
 import { useToast } from '../components/Toast.jsx'
 import CountdownTimer from '../components/CountdownTimer.jsx'
@@ -81,12 +81,13 @@ export default function VehicleDetails() {
   // Get all images (cover image + additional images)
   const allImages = []
   if (vehicle.imageUrl) {
-    allImages.push(vehicle.imageUrl)
+    allImages.push(getImageUrl(vehicle.imageUrl))
   }
   if (vehicle.images && vehicle.images.length > 0) {
     vehicle.images.forEach(img => {
-      if (img.imageUrl && img.imageUrl !== vehicle.imageUrl) {
-        allImages.push(img.imageUrl)
+      const fullUrl = getImageUrl(img.imageUrl)
+      if (fullUrl && fullUrl !== getImageUrl(vehicle.imageUrl)) {
+        allImages.push(fullUrl)
       }
     })
   }

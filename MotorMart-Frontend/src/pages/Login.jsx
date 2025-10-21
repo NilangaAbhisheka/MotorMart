@@ -21,7 +21,13 @@ export default function Login() {
     try {
       const res = await api.post('/api/users/login', { email, password })
       login(res.data.token, res.data.user)
-      navigate('/')
+      
+      // Redirect admins to admin dashboard
+      if (res.data.user.role === 'Admin') {
+        navigate('/admin/dashboard')
+      } else {
+        navigate('/')
+      }
     } catch (e) {
       setError('Invalid credentials. Please try again.')
     } finally {
