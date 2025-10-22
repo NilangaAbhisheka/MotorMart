@@ -10,10 +10,10 @@
 --
 -- Demo Credentials:
 --   Admin:  admin@motormart.com / admin123
---   Seller: john.seller@motormart.com / seller123
---   Seller: sarah.dealer@motormart.com / seller123
---   Buyer:  mike.buyer@motormart.com / buyer123
---   Buyer:  emma.customer@motormart.com / buyer123
+--   Seller: john.seller@motormart.com / 123456
+--   Seller: sarah.dealer@motormart.com / 123456
+--   Buyer:  mike.buyer@motormart.com / 123456
+--   Buyer:  emma.customer@motormart.com / 123456
 -- ============================================
 
 USE motormart;
@@ -36,8 +36,8 @@ TRUNCATE TABLE `Users`;
 -- ============================================
 -- Password hashes are SHA256:
 --   "admin123"  -> 240BE518FABD2724DDB6F04EEB1DA5967448D7E831C08C8FA822809F74C720A9
---   "seller123" -> 8D969EEF6ECAD3C29A3A629280E686CF0C3F5D5A86AFF3CA12020C923ADC6C92
---   "buyer123"  -> 8D969EEF6ECAD3C29A3A629280E686CF0C3F5D5A86AFF3CA12020C923ADC6C92 (same as seller123)
+--   "123456"    -> 8D969EEF6ECAD3C29A3A629280E686CF0C3F5D5A86AFF3CA12020C923ADC6C92
+--   Note: All non-admin users use "123456" as password for simplicity
 
 INSERT INTO `Users` (`Id`, `Username`, `Email`, `PasswordHash`, `Role`, `IsVerified`, `IsActive`, `CreatedAt`) VALUES
 (1, 'admin', 'admin@motormart.com', '240BE518FABD2724DDB6F04EEB1DA5967448D7E831C08C8FA822809F74C720A9', 'Admin', 1, 1, DATE_SUB(NOW(), INTERVAL 180 DAY)),

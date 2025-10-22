@@ -45,8 +45,8 @@ npm run dev
 | Role   | Email                       | Password   |
 |--------|-----------------------------|------------|
 | Admin  | admin@motormart.com         | admin123   |
-| Seller | john.seller@motormart.com   | seller123  |
-| Buyer  | mike.buyer@motormart.com    | buyer123   |
+| Seller | john.seller@motormart.com   | 123456     |
+| Buyer  | mike.buyer@motormart.com    | 123456     |
 
 ## 📖 Full Documentation
 

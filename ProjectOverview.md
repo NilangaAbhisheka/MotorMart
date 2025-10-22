@@ -171,8 +171,8 @@ POST /api/admin/settings
 | Role   | Email                    | Password |
 |--------|--------------------------|----------|
 | Admin  | admin@motormart.com      | admin123 |
-| Seller | john.seller@motormart.com| seller123|
-| Buyer  | mike.buyer@motormart.com | buyer123 |
+| Seller | john.seller@motormart.com| 123456   |
+| Buyer  | mike.buyer@motormart.com | 123456   |
 
 ## Frontend Application
 - **Entry**: `src/main.jsx` mounts `App`, wraps with `AuthProvider`, `ToastProvider`, and `BrowserRouter`.
@@ -402,14 +402,14 @@ Use these credentials to test different user roles:
 | Role   | Email                          | Password   | Description                    |
 |--------|--------------------------------|------------|--------------------------------|
 | Admin  | admin@motormart.com            | admin123   | Full system access             |
-| Seller | john.seller@motormart.com      | seller123  | Can create/manage vehicles     |
-| Seller | sarah.dealer@motormart.com     | seller123  | Another seller account         |
-| Buyer  | mike.buyer@motormart.com       | buyer123   | Can bid and use watchlist      |
-| Buyer  | emma.customer@motormart.com    | buyer123   | Another buyer account          |
+| Seller | john.seller@motormart.com      | 123456     | Can create/manage vehicles     |
+| Seller | sarah.dealer@motormart.com     | 123456     | Another seller account         |
+| Buyer  | mike.buyer@motormart.com       | 123456     | Can bid and use watchlist      |
+| Buyer  | emma.customer@motormart.com    | 123456     | Another buyer account          |
 
 ## 🎯 Feature Walkthrough
 
-### For Buyers (mike.buyer@motormart.com / buyer123)
+### For Buyers (mike.buyer@motormart.com / 123456)
 
 1. **Browse Vehicles**
    - Visit the Home page to see featured auctions
@@ -431,7 +431,7 @@ Use these credentials to test different user roles:
    - Go to "My Bids" to see all vehicles you've bid on
    - Track auction end times and current highest bids
 
-### For Sellers (john.seller@motormart.com / seller123)
+### For Sellers (john.seller@motormart.com / 123456)
 
 1. **Add New Vehicle**
    - Navigate to "Seller Dashboard"

@@ -47,8 +47,8 @@ try {
     Write-Host ""
     Write-Host "Demo Credentials:" -ForegroundColor Cyan
     Write-Host "  Admin:  admin@motormart.com / admin123" -ForegroundColor White
-    Write-Host "  Seller: john.seller@motormart.com / seller123" -ForegroundColor White
-    Write-Host "  Buyer:  mike.buyer@motormart.com / buyer123" -ForegroundColor White
+    Write-Host "  Seller: john.seller@motormart.com / 123456" -ForegroundColor White
+    Write-Host "  Buyer:  mike.buyer@motormart.com / 123456" -ForegroundColor White
     Write-Host ""
 }
 catch {

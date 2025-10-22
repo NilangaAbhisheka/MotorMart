@@ -122,6 +122,6 @@ SELECT 'You can now start the backend and frontend.' AS '';
 SELECT '' AS '';
 SELECT 'Demo Credentials:' AS '';
 SELECT '  Admin:  admin@motormart.com / admin123' AS '';
-SELECT '  Seller: john.seller@motormart.com / seller123' AS '';
-SELECT '  Buyer:  mike.buyer@motormart.com / buyer123' AS '';
+SELECT '  Seller: john.seller@motormart.com / 123456' AS '';
+SELECT '  Buyer:  mike.buyer@motormart.com / 123456' AS '';
 SELECT '' AS '';
